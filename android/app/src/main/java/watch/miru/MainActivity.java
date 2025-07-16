@@ -206,7 +206,7 @@ public class MainActivity extends BridgeActivity {
 
   private void injectJavaScript(WebView webView) {
     try {
-      InputStream inputStream = getAssets().open("public/injection.js");
+      InputStream inputStream = getAssets().open("public/preload.js");
       byte[] buffer = new byte[inputStream.available()];
       inputStream.read(buffer);
       inputStream.close();
