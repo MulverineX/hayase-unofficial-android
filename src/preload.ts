@@ -1,11 +1,10 @@
-/* globals navigationbar, PictureInPicture */
+/* globals PictureInPicture */
 import { App } from '@capacitor/app'
 import { Browser } from '@capacitor/browser'
 import { Device } from '@capacitor/device'
 // import { LocalNotifications } from '@capacitor/local-notifications'
 import { Filesystem } from '@capacitor/filesystem'
 import { Share } from '@capacitor/share'
-import { StatusBar, Style } from '@capacitor/status-bar'
 import { proxy, transferHandlers, proxyMarker, wrap as _wrap, type Endpoint, type Remote, isObject } from 'abslink'
 import { FolderPicker } from 'capacitor-folder-picker'
 import { IntentUri } from 'capacitor-intent-uri'
@@ -99,24 +98,6 @@ if (!window.native) {
 
     return parsed
   }
-
-  // SafeArea.addListener('safeAreaChanged', updateInsets)
-  // screen.orientation.addEventListener('change', updateInsets)
-
-  // async function updateInsets () {
-  //   const { insets } = await SafeArea.getSafeAreaInsets()
-  //   for (const [key, value] of Object.entries(insets)) {
-  //     document.documentElement.style.setProperty(`--safe-area-${key}`, `${value}px`)
-  //   }
-  // }
-  // updateInsets()
-
-  StatusBar.hide()
-  StatusBar.setStyle({ style: Style.Dark })
-  StatusBar.setOverlaysWebView({ overlay: true })
-
-  // @ts-expect-error global
-  navigationbar.setUp(true)
 
   // cordova screen orientation plugin is also used, and it patches global screen.orientation.lock
 

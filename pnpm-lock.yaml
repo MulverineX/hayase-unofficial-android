@@ -44,9 +44,6 @@ importers:
       '@capacitor/share':
         specifier: 6.0.3
         version: 6.0.3(@capacitor/core@6.1.2)
-      '@capacitor/status-bar':
-        specifier: ^6.0.1
-        version: 6.0.1(@capacitor/core@6.1.2)
       '@types/webpack':
         specifier: ^5.28.5
         version: 5.28.5(webpack-cli@5.1.4)
@@ -62,18 +59,12 @@ importers:
       capacitor-nodejs:
         specifier: https://github.com/funniray/Capacitor-NodeJS/releases/download/nodejs-18/capacitor-nodejs-1.0.0-beta.6.tgz
         version: https://github.com/funniray/Capacitor-NodeJS/releases/download/nodejs-18/capacitor-nodejs-1.0.0-beta.6.tgz(@capacitor/core@6.1.2)
-      capacitor-plugin-safe-area:
-        specifier: ^3.0.3
-        version: 3.0.3(@capacitor/core@6.1.2)
       concurrently:
         specifier: ^9.0.1
         version: 9.0.1
       copy-webpack-plugin:
         specifier: ^12.0.2
         version: 12.0.2(webpack@5.95.0)
-      cordova-plugin-navigationbar:
-        specifier: ^1.0.31
-        version: 1.0.31
       cordova-plugin-pip:
         specifier: ^0.0.2
         version: 0.0.2
@@ -202,11 +193,6 @@ packages:
 
   '@capacitor/share@6.0.3':
     resolution: {integrity: sha512-BkNM73Ix+yxQ7fkni8CrrGcp1kSl7u+YNoPLwWKQ1MuQ5Uav0d+CT8M67ie+3dc4jASmegnzlC6tkTmFcPTLeA==}
-    peerDependencies:
-      '@capacitor/core': ^6.0.0
-
-  '@capacitor/status-bar@6.0.1':
-    resolution: {integrity: sha512-Usd9hZZQVAqy+jJfL7jRcYI7dcsxN09Na1yttwdl+F1bk3Ztoukk7CGPDm5VgKUSs53ihQBOy1+sczCACxhNiw==}
     peerDependencies:
       '@capacitor/core': ^6.0.0
 
@@ -1130,11 +1116,6 @@ packages:
     peerDependencies:
       '@capacitor/core': ^5.0.0
 
-  capacitor-plugin-safe-area@3.0.3:
-    resolution: {integrity: sha512-pDM8GQIDC9xxKLZxoO4rrshDuzZqQo6jq7Ni18cYdp2JwmLvlhTYRrvriPAicY1En59UAZ574sIvGlgUBLH3Yw==}
-    peerDependencies:
-      '@capacitor/core': ^6.0.0
-
   chalk@2.4.2:
     resolution: {integrity: sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==}
     engines: {node: '>=4'}
@@ -1344,10 +1325,6 @@ packages:
     engines: {node: '>= 18.12.0'}
     peerDependencies:
       webpack: ^5.1.0
-
-  cordova-plugin-navigationbar@1.0.31:
-    resolution: {integrity: sha512-xt9tx5Aprf052OvuG2JohjRkkU/6U6XQ8mXOx93HaHFz6cCZI1+B0pl/uoyU/FkJsP41QIw1upnMdzgav11ifw==}
-    engines: {'0': {name: cordova, version: '>=3.0.0'}}
 
   cordova-plugin-pip@0.0.2:
     resolution: {integrity: sha512-Wy9aK7rQX3kif6+kUl7RwTG/+arixvW5Sphyr0bPxsVrkVIliseW/S/JhO7BVX25/HGU0lGMvQe8a134yvI9iQ==}
@@ -4497,10 +4474,6 @@ snapshots:
     dependencies:
       '@capacitor/core': 6.1.2
 
-  '@capacitor/status-bar@6.0.1(@capacitor/core@6.1.2)':
-    dependencies:
-      '@capacitor/core': 6.1.2
-
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
@@ -5711,10 +5684,6 @@ snapshots:
     dependencies:
       '@capacitor/core': 6.1.2
 
-  capacitor-plugin-safe-area@3.0.3(@capacitor/core@6.1.2):
-    dependencies:
-      '@capacitor/core': 6.1.2
-
   chalk@2.4.2:
     dependencies:
       ansi-styles: 3.2.1
@@ -5990,8 +5959,6 @@ snapshots:
       schema-utils: 4.2.0
       serialize-javascript: 6.0.2
       webpack: 5.95.0(webpack-cli@5.1.4)
-
-  cordova-plugin-navigationbar@1.0.31: {}
 
   cordova-plugin-pip@0.0.2: {}
 
