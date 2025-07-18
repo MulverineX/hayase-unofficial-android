@@ -53,7 +53,7 @@
 
         <receiver
             android:name="androidx.media.session.MediaButtonReceiver"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
@@ -64,19 +64,18 @@
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
         </provider>
 
-<!--    TODO: Set this to PRODUCTION-->
         <meta-data
             android:name="com.google.android.engage.service.ENV"
-            android:value="DEBUG" />
+            android:value="PRODUCTION" />
     </application>
 
     <!-- Permissions -->
 
-     <uses-permission android:name="com.android.providers.tv.permission.WRITE_EPG_DATA" />
-    <!-- <uses-permission android:name="com.android.providers.tv.permission.READ_EPG_DATA" /> -->
+    <uses-permission android:name="com.android.providers.tv.permission.WRITE_EPG_DATA" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.INTERNET" />

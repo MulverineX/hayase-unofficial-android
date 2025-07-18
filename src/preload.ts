@@ -9,120 +9,120 @@ import { proxy, transferHandlers, proxyMarker, wrap as _wrap, type Endpoint, typ
 import { FolderPicker } from 'capacitor-folder-picker'
 import { IntentUri } from 'capacitor-intent-uri'
 import { type ChannelListenerCallback, NodeJS } from 'capacitor-nodejs'
+
+// import Engage from './engage'
+// import { EngageMovieEntry, EngageSeasonEntry, EngageShowEntry, EngageTvEpisodeEntry, PlatformType, WatchNextType } from './engage/definitions'
 import MediaSessionPlugin from './mediasession'
-import Engage from "./engage"
 // import { SafeArea } from 'capacitor-plugin-safe-area'
 
 import type { PluginListenerHandle } from '@capacitor/core'
 import type { Native } from 'native'
 import type TorrentClient from 'torrent-client'
-import engage from './engage'
-import { EngageMovieEntry, EngageSeasonEntry, EngageShowEntry, EngageTvEpisodeEntry, PlatformType, WatchNextType } from './engage/definitions'
 
 // @ts-expect-error yep.
 if (!window.native) {
-  if (await engage.isServiceAvailable()) {
-    engage.publishContinuationCluster({
-      accountProfile: {
-        accoundId: "global",
-      },
-      entries: [
-        {
-          type: 'tv_episode',
-          watchNextType: WatchNextType.NEW,
-          entityId: "a",
-          name: "Something Else",
-          platformSpecificPlaybackUris: [{
-            type: PlatformType.ANDROID_TV,
-            uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end'
-          },{
-            type: PlatformType.ANDROID_MOBILE,
-            uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end'
-          }],
-          posterImages: [{
-            height: 720,
-            width: 1280,
-            uri: "https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg"
-          }],
-          lastEngagementTimeMillis: 1752717555387,
-          durationMillis: 1500000,
-          episodeNumber: 1,
-          seasonNumber: "1",
-          showTitle: "Sesbian Lex",
-          seasonTitle: "Can't believe I'm not gay",
-          airDateEpochMillis: 1752685200000,
-          genres: ["lesbian", "romance"]
-        } as EngageTvEpisodeEntry,
-        {
-          type: 'movie',
-          watchNextType: WatchNextType.NEW,
-          entityId: "d",
-          name: "Same but movie",
-          posterImages: [{
-            height: 720,
-            width: 1280,
-            uri: "https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg"
-          }],
-          platformSpecificPlaybackUris: [{
-            type: PlatformType.ANDROID_TV,
-            uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end'
-          },{
-            type: PlatformType.ANDROID_MOBILE,
-            uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end'
-          }],
-          lastEngagementTimeMillis: 1752717555387,
-          durationMillis: 1500000,
-          description: "Wowie",
-          genres: ["lesbian", "romance"]
-        } as EngageMovieEntry
-      ]
-    })
-    engage.publishRecommendationCluster({
-      accountProfile: {
-        accoundId: "global"
-      },
-      clusters: [
-        {
-          entries:[
-            {
-              type: 'tv_season',
-              watchNextType: WatchNextType.NEW,
-              entityId: "b",
-              infoPageUri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end',
-              name: "Same stuff",
-              posterImages: [{
-                height: 720,
-                width: 1280,
-                uri: "https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg"
-              }],
-              lastEngagementTimeMillis: 1752717555387,
-              firstEpisodeAirDateEpochMillis: 1752685200000,
-              latestEpisodeAirDateEpochMillis: 1752685200000,
-              episodeCount: 6,
-              seasonNumber: 1,
-              genres: ["lesbian", "romance"]
-            } as EngageSeasonEntry,
-            {
-              type: 'tv_show',
-              entityId: "c",
-              watchNextType: WatchNextType.NEW,
-              infoPageUri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end',
-              name: "Same but show",
-              posterImages: [{
-                height: 720,
-                width: 1280,
-                uri: "https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg"
-              }],
-              lastEngagementTimeMillis: 1752717555387,
-              firstEpisodeAirDateEpochMillis: 1752685200000,
-              latestEpisodeAirDateEpochMillis: 1752685200000,
-              seasonCount: 2,
-              genres: ["lesbian", "romance"]
-            } as EngageShowEntry
-          ]
-        }
-    ]})
-  }
+  // if (await engage.isServiceAvailable()) {
+  //   engage.publishContinuationCluster({
+  //     accountProfile: {
+  //       accoundId: "global",
+  //     },
+  //     entries: [
+  //       {
+  //         type: 'tv_episode',
+  //         watchNextType: WatchNextType.NEW,
+  //         entityId: "a",
+  //         name: "Something Else",
+  //         platformSpecificPlaybackUris: [{
+  //           type: PlatformType.ANDROID_TV,
+  //           uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end'
+  //         },{
+  //           type: PlatformType.ANDROID_MOBILE,
+  //           uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end'
+  //         }],
+  //         posterImages: [{
+  //           height: 720,
+  //           width: 1280,
+  //           uri: "https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg"
+  //         }],
+  //         lastEngagementTimeMillis: 1752717555387,
+  //         durationMillis: 1500000,
+  //         episodeNumber: 1,
+  //         seasonNumber: "1",
+  //         showTitle: "Sesbian Lex",
+  //         seasonTitle: "Can't believe I'm not gay",
+  //         airDateEpochMillis: 1752685200000,
+  //         genres: ["lesbian", "romance"]
+  //       } as EngageTvEpisodeEntry,
+  //       {
+  //         type: 'movie',
+  //         watchNextType: WatchNextType.NEW,
+  //         entityId: "d",
+  //         name: "Same but movie",
+  //         posterImages: [{
+  //           height: 720,
+  //           width: 1280,
+  //           uri: "https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg"
+  //         }],
+  //         platformSpecificPlaybackUris: [{
+  //           type: PlatformType.ANDROID_TV,
+  //           uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end'
+  //         },{
+  //           type: PlatformType.ANDROID_MOBILE,
+  //           uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end'
+  //         }],
+  //         lastEngagementTimeMillis: 1752717555387,
+  //         durationMillis: 1500000,
+  //         description: "Wowie",
+  //         genres: ["lesbian", "romance"]
+  //       } as EngageMovieEntry
+  //     ]
+  //   })
+  //   engage.publishRecommendationCluster({
+  //     accountProfile: {
+  //       accoundId: "global"
+  //     },
+  //     clusters: [
+  //       {
+  //         entries:[
+  //           {
+  //             type: 'tv_season',
+  //             watchNextType: WatchNextType.NEW,
+  //             entityId: "b",
+  //             infoPageUri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end',
+  //             name: "Same stuff",
+  //             posterImages: [{
+  //               height: 720,
+  //               width: 1280,
+  //               uri: "https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg"
+  //             }],
+  //             lastEngagementTimeMillis: 1752717555387,
+  //             firstEpisodeAirDateEpochMillis: 1752685200000,
+  //             latestEpisodeAirDateEpochMillis: 1752685200000,
+  //             episodeCount: 6,
+  //             seasonNumber: 1,
+  //             genres: ["lesbian", "romance"]
+  //           } as EngageSeasonEntry,
+  //           {
+  //             type: 'tv_show',
+  //             entityId: "c",
+  //             watchNextType: WatchNextType.NEW,
+  //             infoPageUri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end',
+  //             name: "Same but show",
+  //             posterImages: [{
+  //               height: 720,
+  //               width: 1280,
+  //               uri: "https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg"
+  //             }],
+  //             lastEngagementTimeMillis: 1752717555387,
+  //             firstEpisodeAirDateEpochMillis: 1752685200000,
+  //             latestEpisodeAirDateEpochMillis: 1752685200000,
+  //             seasonCount: 2,
+  //             genres: ["lesbian", "romance"]
+  //           } as EngageShowEntry
+  //         ]
+  //       }
+  //   ]})
+  // }
 
   // window.WatchNext.addTrendingRecommendation(
   //   '', // channelId (empty to auto-create)
@@ -308,6 +308,22 @@ if (!window.native) {
   })
   const version = App.getInfo().then(info => info.version)
 
+  const stateMapping = {
+    none: 6, // 0
+    stopped: 1,
+    paused: 2,
+    playing: 3,
+    fast_forwarding: 4,
+    rewinding: 5,
+    buffering: 6,
+    error: 7,
+    connecting: 8,
+    skipping_to_previous: 9,
+    skipping_to_next: 10,
+    skipping_to_queue_item: 11,
+    position_unknown: -1
+  } as const
+
   const native: Partial<Native> = {
     openURL: (url: string) => Browser.open({ url }),
     selectDownload: async () => {
@@ -340,10 +356,12 @@ if (!window.native) {
       cpu: {},
       ram: {}
     }),
-    setActionHandler: MediaSessionPlugin.setActionHandler,
-    setMediaSession: MediaSessionPlugin.setMediaSession,
-    setPositionState: MediaSessionPlugin.setPositionState,
-    setPlayBackState: MediaSessionPlugin.setPlayBackState,
+    setActionHandler: (name, cb) => MediaSessionPlugin.addListener(name, cb!),
+    setMediaSession: (session, duration) => MediaSessionPlugin.setMediaSession({ ...session, duration }),
+    setPositionState: (state, paused) => MediaSessionPlugin.setPlaybackState({
+      ...(state as { duration: number, playbackRate: number, position: number }),
+      state: stateMapping[paused]
+    }),
     checkAvailableSpace: async () => await (await torrent).checkAvailableSpace(),
     checkIncomingConnections: async (port) => await (await torrent).checkIncomingConnections(port),
     updatePeerCounts: async (hashes) => await (await torrent).scrape(hashes),

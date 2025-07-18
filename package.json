@@ -47,13 +47,14 @@
     "dev:adb-port": "adb reverse tcp:5001 tcp:5001",
     "dev:ios": "run-p dev:start cap-run:ios",
     "dev:sync": "cap sync",
-    "dev:android": "cap run android",
+    "dev:android": "cap run android --flavor mobile",
     "dev:android-port": "run-s dev:android dev:adb-port",
     "dev:start": "run-p dev:webpack dev:android-port",
     "dev:webpack": "webpack serve",
     "dev:logcat": "adb logcat -s \"NodeJS-Engine,nodejs\"",
     "dev:logcat-enable": "adb shell setprop persist.log.tag I",
+    "dev:logcat-disable": "adb shell setprop persist.log.tag S",
     "test:e2e": "cross-env NODE_ENV=production run-s build:web dev:android"
   },
-  "version": "6.4.0"
+  "version": "6.4.2"
 }

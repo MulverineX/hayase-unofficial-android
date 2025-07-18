@@ -90,10 +90,14 @@ public class MediaNotificationService extends Service {
         pipIntent.setAction("watch.miru.action.PIP");
         PendingIntent pipPendingIntent = PendingIntent.getService(this, 1, pipIntent, PendingIntent.FLAG_IMMUTABLE);
 
+        Intent openIntent = new Intent(this, MainActivity.class);
+        PendingIntent openPendingIntent = PendingIntent.getActivity(this, 1, openIntent, PendingIntent.FLAG_IMMUTABLE);
+
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this, "playback")
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.mipmap.ic_launcher_foreground)
                 .setContentTitle(metadata == null ? "Unknown" : metadata.getDescription().getTitle())
                 .setContentText(metadata == null ? "Unknown" : metadata.getDescription().getDescription())
+                .setContentIntent(openPendingIntent)
                 .setStyle(style);
 
         notification.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_previous, "Last Track", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)));
