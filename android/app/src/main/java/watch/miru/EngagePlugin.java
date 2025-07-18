@@ -34,13 +34,32 @@ import com.google.android.engage.video.datamodel.TvShowEntity;
 
 import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @CapacitorPlugin(name = "Engage")
 public class EngagePlugin extends Plugin {
     AppEngagePublishClient client = null;
+
+    private static <T, R> List<R> mapToEngage(List<T> list) {
+        if (list == null) {
+            return new ArrayList<>();
+        }
+        List<R> result = new ArrayList<>();
+        for (T item : list) {
+            if (item instanceof EngageAvailabilityWindow) {
+                result.add((R) ((EngageAvailabilityWindow) item).asEngage());
+            } else if (item instanceof EngageUri) {
+                result.add((R) ((EngageUri) item).asEngage());
+            } else if (item instanceof EngageImage) {
+                result.add((R) ((EngageImage) item).asEngage());
+            } else if (item instanceof EngageContentRating) {
+                result.add((R) ((EngageContentRating) item).asEngage());
+            }
+        }
+        return result;
+    }
 
     @Override
     public void load() {
@@ -272,15 +291,15 @@ public class EngagePlugin extends Plugin {
 
         protected TvEpisodeEntity asEngage() {
             return new TvEpisodeEntity.Builder()
-                    .addAllAvailabilityTimeWindows(availabilityTimeWindows == null ? Collections.emptyList() : availabilityTimeWindows.stream().map(EngageAvailabilityWindow::asEngage).collect(Collectors.toList()))
+                    .addAllAvailabilityTimeWindows(availabilityTimeWindows == null ? Collections.<DisplayTimeWindow>emptyList() : EngagePlugin.<EngageAvailabilityWindow, DisplayTimeWindow>mapToEngage(availabilityTimeWindows))
                     .setInfoPageUri(infoPageUri == null ? null : Uri.parse(infoPageUri))
                     .setWatchNextType(watchNextType)
                     .setEntityId(entityId)
                     .setDownloadedOnDevice(downloadedOnDevice)
                     .setIsNextEpisodeAvailable(isNextEpisodeAvailable)
                     .setName(name)
-                    .addPlatformSpecificPlaybackUris(platformSpecificPlaybackUris.stream().map(EngageUri::asEngage).collect(Collectors.toList()))
-                    .addPosterImages(posterImages.stream().map(EngageImage::asEngage).collect(Collectors.toList()))
+                    .addPlatformSpecificPlaybackUris(EngagePlugin.<EngageUri, PlatformSpecificUri>mapToEngage(platformSpecificPlaybackUris))
+                    .addPosterImages(EngagePlugin.<EngageImage, Image>mapToEngage(posterImages))
                     .setLastEngagementTimeMillis(lastEngagementTimeMillis)
                     .setDurationMillis(durationMillis)
                     .setLastPlayBackPositionTimeMillis(lastPlayBackPositionTimeMillis)
@@ -291,7 +310,7 @@ public class EngagePlugin extends Plugin {
                     .setAirDateEpochMillis(airDateEpochMillis)
                     .setAvailability(ContentAvailability.AVAILABILITY_AVAILABLE)
                     .addGenres(genres)
-                    .addContentRatings(contentRatings == null ? Collections.emptyList() : contentRatings.stream().map(EngageContentRating::asEngage).collect(Collectors.toList()))
+                    .addContentRatings(contentRatings == null ? Collections.<RatingSystem>emptyList() : EngagePlugin.<EngageContentRating, RatingSystem>mapToEngage(contentRatings))
                     .build();
         }
     }
@@ -314,13 +333,13 @@ public class EngagePlugin extends Plugin {
 
         protected TvSeasonEntity asEngage() {
             return new TvSeasonEntity.Builder()
-                    .addAllAvailabilityTimeWindows(availabilityTimeWindows == null ? Collections.emptyList() : availabilityTimeWindows.stream().map(EngageAvailabilityWindow::asEngage).collect(Collectors.toList()))
+                    .addAllAvailabilityTimeWindows(availabilityTimeWindows == null ? Collections.<DisplayTimeWindow>emptyList() : EngagePlugin.<EngageAvailabilityWindow, DisplayTimeWindow>mapToEngage(availabilityTimeWindows))
                     .setInfoPageUri(infoPageUri == null ? null : Uri.parse(infoPageUri))
                     .setPlayBackUri(playBackUri == null ? null : Uri.parse(playBackUri))
                     .setWatchNextType(watchNextType)
                     .setEntityId(entityId)
                     .setName(name)
-                    .addPosterImages(posterImages.stream().map(EngageImage::asEngage).collect(Collectors.toList()))
+                    .addPosterImages(EngagePlugin.<EngageImage, Image>mapToEngage(posterImages))
                     .setLastEngagementTimeMillis(lastEngagementTimeMillis)
                     .setLastPlayBackPositionTimeMillis(lastPlayBackPositionTimeMillis)
                     .setFirstEpisodeAirDateEpochMillis(firstEpisodeAirDateEpochMillis)
@@ -329,7 +348,7 @@ public class EngagePlugin extends Plugin {
                     .setSeasonNumber(seasonNumber)
                     .setAvailability(ContentAvailability.AVAILABILITY_AVAILABLE)
                     .addGenres(genres)
-                    .addContentRatings(contentRatings == null ? Collections.emptyList() : contentRatings.stream().map(EngageContentRating::asEngage).collect(Collectors.toList()))
+                    .addContentRatings(contentRatings == null ? Collections.<RatingSystem>emptyList() : EngagePlugin.<EngageContentRating, RatingSystem>mapToEngage(contentRatings))
                     .build();
         }
     }
@@ -351,13 +370,13 @@ public class EngagePlugin extends Plugin {
 
         protected TvShowEntity asEngage() {
             return new TvShowEntity.Builder()
-                    .addAllAvailabilityTimeWindows(availabilityTimeWindows == null ? Collections.emptyList() : availabilityTimeWindows.stream().map(EngageAvailabilityWindow::asEngage).collect(Collectors.toList()))
+                    .addAllAvailabilityTimeWindows(availabilityTimeWindows == null ? Collections.<DisplayTimeWindow>emptyList() : EngagePlugin.<EngageAvailabilityWindow, DisplayTimeWindow>mapToEngage(availabilityTimeWindows))
                     .setInfoPageUri(infoPageUri == null ? null : Uri.parse(infoPageUri))
                     .setPlayBackUri(playBackUri == null ? null : Uri.parse(playBackUri))
                     .setWatchNextType(watchNextType)
                     .setEntityId(entityId)
                     .setName(name)
-                    .addPosterImages(posterImages.stream().map(EngageImage::asEngage).collect(Collectors.toList()))
+                    .addPosterImages(EngagePlugin.<EngageImage, Image>mapToEngage(posterImages))
                     .setLastEngagementTimeMillis(lastEngagementTimeMillis)
                     .setLastPlayBackPositionTimeMillis(lastPlayBackPositionTimeMillis)
                     .setFirstEpisodeAirDateEpochMillis(firstEpisodeAirDateEpochMillis)
@@ -365,7 +384,7 @@ public class EngagePlugin extends Plugin {
                     .setAvailability(ContentAvailability.AVAILABILITY_AVAILABLE)
                     .setSeasonCount(seasonCount)
                     .addGenres(genres)
-                    .addContentRatings(contentRatings == null ? Collections.emptyList() : contentRatings.stream().map(EngageContentRating::asEngage).collect(Collectors.toList()))
+                    .addContentRatings(contentRatings == null ? Collections.<RatingSystem>emptyList() : EngagePlugin.<EngageContentRating, RatingSystem>mapToEngage(contentRatings))
                     .build();
         }
     }
@@ -388,11 +407,11 @@ public class EngagePlugin extends Plugin {
 
         protected MovieEntity asEngage() {
             return new MovieEntity.Builder()
-                    .addAllAvailabilityTimeWindows(availabilityTimeWindows == null ? Collections.emptyList() : availabilityTimeWindows.stream().map(EngageAvailabilityWindow::asEngage).collect(Collectors.toList()))
-                    .addContentRatings(contentRatings == null ? Collections.emptyList() : contentRatings.stream().map(EngageContentRating::asEngage).collect(Collectors.toList()))
+                    .addAllAvailabilityTimeWindows(availabilityTimeWindows == null ? Collections.<DisplayTimeWindow>emptyList() : EngagePlugin.<EngageAvailabilityWindow, DisplayTimeWindow>mapToEngage(availabilityTimeWindows))
+                    .addContentRatings(contentRatings == null ? Collections.<RatingSystem>emptyList() : EngagePlugin.<EngageContentRating, RatingSystem>mapToEngage(contentRatings))
                     .addGenres(genres)
-                    .addPlatformSpecificPlaybackUris(platformSpecificPlaybackUris.stream().map(EngageUri::asEngage).collect(Collectors.toList()))
-                    .addPosterImages(posterImages.stream().map(EngageImage::asEngage).collect(Collectors.toList()))
+                    .addPlatformSpecificPlaybackUris(EngagePlugin.<EngageUri, PlatformSpecificUri>mapToEngage(platformSpecificPlaybackUris))
+                    .addPosterImages(EngagePlugin.<EngageImage, Image>mapToEngage(posterImages))
                     .setDescription(description)
                     .setAvailability(ContentAvailability.AVAILABILITY_AVAILABLE)
                     .setDownloadedOnDevice(downloadedOnDevice)

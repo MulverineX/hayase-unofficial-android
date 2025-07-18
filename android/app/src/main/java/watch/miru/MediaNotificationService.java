@@ -41,7 +41,7 @@ public class MediaNotificationService extends Service {
         if (Objects.equals(intent.getAction(), "watch.miru.action.PIP")) {
             controller.sendCommand("enterpictureinpicture", null, null);
             return START_STICKY;
-        }else if (Objects.equals(intent.getAction(), "android.intent.action.MEDIA_BUTTON")) {
+        } else if (Objects.equals(intent.getAction(), "android.intent.action.MEDIA_BUTTON")) {
             if (!Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction()) || !intent.hasExtra(Intent.EXTRA_KEY_EVENT)) {
                 return START_STICKY;
             }
@@ -149,7 +149,7 @@ public class MediaNotificationService extends Service {
 
         @Override
         public void onPlaybackStateChanged(@Nullable PlaybackStateCompat state) {
-            if (state == null) {return;}
+            if (state == null) return;
             if (state.getState() != lastState) {
                 lastState = state.getState();
                 updateNotification();
