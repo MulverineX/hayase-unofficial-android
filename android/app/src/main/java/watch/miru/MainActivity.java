@@ -12,6 +12,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.getcapacitor.BridgeActivity;
 
 import java.io.IOException;
@@ -23,9 +26,14 @@ import java.util.Map;
 
 public class MainActivity extends BridgeActivity {
   private final Map<WebView, Dialog> popupDialogs = new HashMap<>();
+  protected RequestQueue queue = null;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
+    this.queue = Volley.newRequestQueue(this);
+    registerPlugin(MediaNotificationPlugin.class);
+    registerPlugin(EngagePlugin.class);
+
     super.onCreate(savedInstanceState);
 
     try {
