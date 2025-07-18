@@ -357,11 +357,12 @@ if (!window.native) {
       ram: {}
     }),
     setActionHandler: (name, cb) => MediaSessionPlugin.addListener(name, cb!),
-    setMediaSession: (session, duration) => MediaSessionPlugin.setMediaSession({ ...session, duration }),
+    setMediaSession: (session, _id, duration) => MediaSessionPlugin.setMediaSession({ ...session, duration }),
     setPositionState: (state, paused) => MediaSessionPlugin.setPlaybackState({
       ...(state as { duration: number, playbackRate: number, position: number }),
       state: stateMapping[paused]
     }),
+    setPlayBackState: async () => {},
     checkAvailableSpace: async () => await (await torrent).checkAvailableSpace(),
     checkIncomingConnections: async (port) => await (await torrent).checkIncomingConnections(port),
     updatePeerCounts: async (hashes) => await (await torrent).scrape(hashes),
