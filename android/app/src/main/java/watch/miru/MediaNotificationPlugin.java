@@ -55,6 +55,15 @@ public class MediaNotificationPlugin extends Plugin {
         return current;
     }
 
+    @Override
+    protected void handleOnDestroy() {
+        if (current != null) {
+            getContext().stopService(new Intent(this.getContext(), MediaNotificationService.class));
+            current.release();
+            current = null;
+        }
+    }
+
     @PluginMethod
     public void setMediaSession(PluginCall call) {
         MediaSessionCompat session = getSession();

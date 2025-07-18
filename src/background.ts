@@ -42,3 +42,7 @@ channel.on('port-init', _data => {
     tclient?.updateSettings(settings)
   }
 })
+
+channel.on('destroy', () => {
+  tclient?.destroy()
+})

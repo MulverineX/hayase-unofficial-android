@@ -33,16 +33,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    flavorDimensions "platform"
-    productFlavors {
-        tv {
-            dimension "platform"
-            versionNameSuffix "-tv"
-        }
-        mobile {
-            dimension "platform"
-        }
-    }
 }
 
 repositories {
@@ -52,8 +42,7 @@ repositories {
 }
 
 dependencies {
-    tvImplementation 'com.google.android.engage:engage-tv:1.0.3' // for TV
-    mobileImplementation 'com.google.android.engage:engage-core:1.5.8'
+    implementation 'com.google.android.engage:engage-core:1.5.8'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.1' // JSON object mapper. Could switch to gson?
     implementation 'androidx.media:media:1.7.0' // For media notification/compat
     implementation 'com.android.volley:volley:1.2.1' // HTTP(s) client

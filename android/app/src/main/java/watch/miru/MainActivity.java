@@ -12,10 +12,15 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
+import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.getcapacitor.BridgeActivity;
+import com.getcapacitor.JSArray;
+
+import net.hampoelz.capacitor.nodejs.CapacitorNodeJSPlugin;
+import net.hampoelz.capacitor.nodejs.CapacitorNodeJS;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,10 +29,31 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 public class MainActivity extends BridgeActivity {
   private final Map<WebView, Dialog> popupDialogs = new HashMap<>();
   protected RequestQueue queue = null;
 
+  @Override
+  public void onDestroy() {
+    try {
+      CapacitorNodeJSPlugin capacitorNodeJS = (CapacitorNodeJSPlugin) getBridge().getPlugin("CapacitorNodeJS").getInstance();
+      Field f = CapacitorNodeJSPlugin.class.getDeclaredField("implementation");
+      f.setAccessible(true);
+      CapacitorNodeJS implementation = (CapacitorNodeJS) f.get(capacitorNodeJS);
+      Method m = CapacitorNodeJS.class.getDeclaredMethod("sendMessage", String.class, String.class, JSArray.class);
+      m.setAccessible(true);
+      m.invoke(implementation, "EVENT_CHANNEL", "destroy", new JSArray());
+      Log.i("Destroy", "Sent destroy message to NodeJS");
+    } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+      Log.e("Destroy", "Failed to send destroy message to NodeJS", e);
+    }
+    
+    super.onDestroy();
+  }
   @Override
   public void onCreate(Bundle savedInstanceState) {
     this.queue = Volley.newRequestQueue(this);

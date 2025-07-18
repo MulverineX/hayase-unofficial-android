@@ -10,8 +10,8 @@ import { FolderPicker } from 'capacitor-folder-picker'
 import { IntentUri } from 'capacitor-intent-uri'
 import { type ChannelListenerCallback, NodeJS } from 'capacitor-nodejs'
 
-// import Engage from './engage'
-// import { EngageMovieEntry, EngageSeasonEntry, EngageShowEntry, EngageTvEpisodeEntry, PlatformType, WatchNextType } from './engage/definitions'
+// import engage from './engage'
+// import { PlatformType, WatchNextType } from './engage/definitions'
 import MediaSessionPlugin from './mediasession'
 // import { SafeArea } from 'capacitor-plugin-safe-area'
 
@@ -21,127 +21,110 @@ import type TorrentClient from 'torrent-client'
 
 // @ts-expect-error yep.
 if (!window.native) {
-  // if (await engage.isServiceAvailable()) {
+  // if ((await engage.isServiceAvailable()).result) {
   //   engage.publishContinuationCluster({
   //     accountProfile: {
-  //       accoundId: "global",
+  //       accoundId: 'global'
   //     },
   //     entries: [
   //       {
   //         type: 'tv_episode',
   //         watchNextType: WatchNextType.NEW,
-  //         entityId: "a",
-  //         name: "Something Else",
+  //         entityId: 'a',
+  //         name: 'Something Else',
   //         platformSpecificPlaybackUris: [{
   //           type: PlatformType.ANDROID_TV,
   //           uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end'
-  //         },{
+  //         }, {
   //           type: PlatformType.ANDROID_MOBILE,
   //           uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end'
   //         }],
   //         posterImages: [{
   //           height: 720,
   //           width: 1280,
-  //           uri: "https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg"
+  //           uri: 'https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg'
   //         }],
   //         lastEngagementTimeMillis: 1752717555387,
   //         durationMillis: 1500000,
   //         episodeNumber: 1,
-  //         seasonNumber: "1",
-  //         showTitle: "Sesbian Lex",
+  //         seasonNumber: '1',
+  //         showTitle: 'Sesbian Lex',
   //         seasonTitle: "Can't believe I'm not gay",
   //         airDateEpochMillis: 1752685200000,
-  //         genres: ["lesbian", "romance"]
-  //       } as EngageTvEpisodeEntry,
+  //         genres: ['lesbian', 'romance']
+  //       },
   //       {
   //         type: 'movie',
   //         watchNextType: WatchNextType.NEW,
-  //         entityId: "d",
-  //         name: "Same but movie",
+  //         entityId: 'd',
+  //         name: 'Same but movie',
+  //         releaseDateEpochMillis: 1752017555387,
   //         posterImages: [{
   //           height: 720,
   //           width: 1280,
-  //           uri: "https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg"
+  //           uri: 'https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg'
   //         }],
   //         platformSpecificPlaybackUris: [{
   //           type: PlatformType.ANDROID_TV,
   //           uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end'
-  //         },{
+  //         }, {
   //           type: PlatformType.ANDROID_MOBILE,
   //           uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end'
   //         }],
   //         lastEngagementTimeMillis: 1752717555387,
   //         durationMillis: 1500000,
-  //         description: "Wowie",
-  //         genres: ["lesbian", "romance"]
-  //       } as EngageMovieEntry
+  //         description: 'Wowie',
+  //         genres: ['lesbian', 'romance']
+  //       }
   //     ]
   //   })
   //   engage.publishRecommendationCluster({
   //     accountProfile: {
-  //       accoundId: "global"
+  //       accoundId: 'global'
   //     },
   //     clusters: [
   //       {
-  //         entries:[
+  //         entries: [
   //           {
   //             type: 'tv_season',
   //             watchNextType: WatchNextType.NEW,
-  //             entityId: "b",
+  //             entityId: 'b',
   //             infoPageUri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end',
-  //             name: "Same stuff",
+  //             name: 'Same stuff',
   //             posterImages: [{
   //               height: 720,
   //               width: 1280,
-  //               uri: "https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg"
+  //               uri: 'https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg'
   //             }],
   //             lastEngagementTimeMillis: 1752717555387,
   //             firstEpisodeAirDateEpochMillis: 1752685200000,
   //             latestEpisodeAirDateEpochMillis: 1752685200000,
   //             episodeCount: 6,
   //             seasonNumber: 1,
-  //             genres: ["lesbian", "romance"]
-  //           } as EngageSeasonEntry,
+  //             genres: ['lesbian', 'romance']
+  //           },
   //           {
   //             type: 'tv_show',
-  //             entityId: "c",
+  //             entityId: 'c',
   //             watchNextType: WatchNextType.NEW,
   //             infoPageUri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end',
-  //             name: "Same but show",
+  //             name: 'Same but show',
   //             posterImages: [{
   //               height: 720,
   //               width: 1280,
-  //               uri: "https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg"
+  //               uri: 'https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg'
   //             }],
   //             lastEngagementTimeMillis: 1752717555387,
   //             firstEpisodeAirDateEpochMillis: 1752685200000,
   //             latestEpisodeAirDateEpochMillis: 1752685200000,
   //             seasonCount: 2,
-  //             genres: ["lesbian", "romance"]
-  //           } as EngageShowEntry
+  //             genres: ['lesbian', 'romance']
+  //           }
   //         ]
   //       }
-  //   ]})
+  //     ]
+  //   })
   // }
-
-  // window.WatchNext.addTrendingRecommendation(
-  //   '', // channelId (empty to auto-create)
-  //   'uniqueId2', // id
-  //   'Trending Show', // title
-  //   'Everyone is watching this!', // description
-  //   'https://i.ytimg.com/vi/nEj2X9x9M7Q/maxresdefault.jpg', // posterArtUri
-  //   'hayase://playback/uniqueId2' // intentUri
-  // )
-
-  // window.WatchNext.addPlannedRecommendation(
-  //   '', // channelId (empty to auto-create)
-  //   'uniqueId3', // id
-  //   'Planned Show', // title
-  //   'You planned to watch this.', // description
-  //   'https://i.ytimg.com/vi/dYF8mVz0vIA/maxresdefault.jpg', // posterArtUri
-  //   'hayase://playback/uniqueId3' // intentUri
-  // )
-  // let canShowNotifications = false
 
   // LocalNotifications.checkPermissions().then(async value => {
   //   if (value) {

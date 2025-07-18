@@ -47,7 +47,7 @@
     "dev:adb-port": "adb reverse tcp:5001 tcp:5001",
     "dev:ios": "run-p dev:start cap-run:ios",
     "dev:sync": "cap sync",
-    "dev:android": "cap run android --flavor mobile",
+    "dev:android": "cap run android",
     "dev:android-port": "run-s dev:android dev:adb-port",
     "dev:start": "run-p dev:webpack dev:android-port",
     "dev:webpack": "webpack serve",

@@ -37,6 +37,7 @@ public class MediaNotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent == null) return START_STICKY;
         if (Objects.equals(intent.getAction(), "watch.miru.action.PIP")) {
             controller.sendCommand("enterpictureinpicture", null, null);
             return START_STICKY;
@@ -46,6 +47,8 @@ public class MediaNotificationService extends Service {
             }
             KeyEvent ke = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
             controller.dispatchMediaButtonEvent(ke);
+            return START_STICKY;
+        } else if (!intent.hasExtra("token")) {
             return START_STICKY;
         }
 
