@@ -5,7 +5,7 @@ import { Device } from '@capacitor/device'
 // import { LocalNotifications } from '@capacitor/local-notifications'
 import { Filesystem } from '@capacitor/filesystem'
 import { Share } from '@capacitor/share'
-import { proxy, transferHandlers, proxyMarker, wrap as _wrap, type Endpoint, type Remote, isObject } from 'abslink'
+import { proxy, wrap as _wrap, type Endpoint, type Remote } from 'abslink'
 import { FolderPicker } from 'capacitor-folder-picker'
 import { IntentUri } from 'capacitor-intent-uri'
 import { type ChannelListenerCallback, NodeJS } from 'capacitor-nodejs'
@@ -13,6 +13,7 @@ import { type ChannelListenerCallback, NodeJS } from 'capacitor-nodejs'
 // import engage from './engage'
 // import { PlatformType, WatchNextType } from './engage/definitions'
 import MediaSessionPlugin from './mediasession'
+import './serializers/error'
 // import { SafeArea } from 'capacitor-plugin-safe-area'
 
 import type { PluginListenerHandle } from '@capacitor/core'
@@ -153,12 +154,6 @@ if (!window.native) {
   //   }
   //   if (canShowNotifications) LocalNotifications.schedule({ notifications: [notification] })
   // })
-
-  transferHandlers.set('error', {
-    canHandle: (value): value is Error => isObject(value) && value instanceof Error && !(proxyMarker in value),
-    serialize: (value: unknown) => ({ message: value.message, name: value.name, stack: value.stack }),
-    deserialize: (serialized: unknown) => Object.assign(new Error(serialized.message), serialized)
-  })
 
   const protocolRx = /hayase:\/\/([a-z0-9]+)\/(.*)/i
 

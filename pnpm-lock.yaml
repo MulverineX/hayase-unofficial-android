@@ -48,8 +48,8 @@ importers:
         specifier: ^5.28.5
         version: 5.28.5(webpack-cli@5.1.4)
       abslink:
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
       capacitor-folder-picker:
         specifier: ^0.0.2
         version: 0.0.2(@capacitor/core@6.1.2)
@@ -715,8 +715,8 @@ packages:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
     engines: {node: '>=6.5'}
 
-  abslink@1.1.1:
-    resolution: {integrity: sha512-7McdDKgL0Knt7n743FGn/Ni643fNVJuiIVp1mZm2Vy+FXv+B4zgR9Ef4b0EGPc5u+T9LI7pyerigoW8BdBrqQw==}
+  abslink@1.1.2:
+    resolution: {integrity: sha512-vnuzpBWd09oAdyFmseonzDoyfZtjKN9XuFzoXQUgU0Sme4ksYRwdH9YgOeserpDdtDMq7nd82gnKbTrYQQ3FnQ==}
 
   accepts@1.3.8:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
@@ -5231,7 +5231,7 @@ snapshots:
     dependencies:
       event-target-shim: 5.0.1
 
-  abslink@1.1.1: {}
+  abslink@1.1.2: {}
 
   accepts@1.3.8:
     dependencies:
