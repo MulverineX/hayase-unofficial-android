@@ -14,9 +14,6 @@ importers:
       '@capacitor/app':
         specifier: ^6.0.1
         version: 6.0.1(@capacitor/core@6.1.2)
-      '@capacitor/app-launcher':
-        specifier: ^6.0.2
-        version: 6.0.2(@capacitor/core@6.1.2)
       '@capacitor/assets':
         specifier: github:thaunknown/capacitor-assets
         version: https://codeload.github.com/thaunknown/capacitor-assets/tar.gz/09ee7e21673f6ce17c677efe76739e5eb28fe908(@types/node@22.7.5)(encoding@0.1.13)(typescript@5.8.3)
@@ -32,9 +29,6 @@ importers:
       '@capacitor/device':
         specifier: ^6.0.1
         version: 6.0.1(@capacitor/core@6.1.2)
-      '@capacitor/ios':
-        specifier: ^6.1.2
-        version: 6.1.2(@capacitor/core@6.1.2)
       '@capacitor/local-notifications':
         specifier: ^6.1.0
         version: 6.1.0(@capacitor/core@6.1.2)
@@ -88,7 +82,7 @@ importers:
         version: 4.1.5
       torrent-client:
         specifier: github:hayase-app/torrent-client
-        version: https://codeload.github.com/hayase-app/torrent-client/tar.gz/337d9ad637b651dfef0e2b152863f2687e7aa11e
+        version: https://codeload.github.com/hayase-app/torrent-client/tar.gz/c2e31e25893a1c6145f483c6625c18a038690e26
       ts-loader:
         specifier: ^9.5.1
         version: 9.5.1(typescript@5.8.3)(webpack@5.95.0)
@@ -131,11 +125,6 @@ packages:
     peerDependencies:
       '@capacitor/core': ^6.1.0
 
-  '@capacitor/app-launcher@6.0.2':
-    resolution: {integrity: sha512-g1hLHTnb7240HYcM28TBN3HbCkc6HV4242sj5/xxQyQ4N4R61DfJLpZDLtp0Wq9WkLlFCJ2B2svHU7ZvA3Tvgg==}
-    peerDependencies:
-      '@capacitor/core': ^6.0.0
-
   '@capacitor/app@6.0.1':
     resolution: {integrity: sha512-0kXbOl7LPPMFVcAii3u/7Ps0DvXlr7dtHT97r9J1faDlgdQLQUvtGp48tjvFm48gqHI0aOPRJnTBr5JXW4ETYg==}
     peerDependencies:
@@ -169,11 +158,6 @@ packages:
     resolution: {integrity: sha512-Tlz67DAO5GKb5YAfupXiENZxDww6mHnG9iKI+8D5SVF82VLpEv5r9qwKtiounuQB2y2HWiHV8tlOk7DqnLVUqQ==}
     peerDependencies:
       '@capacitor/core': ^6.0.0
-
-  '@capacitor/ios@6.1.2':
-    resolution: {integrity: sha512-HaeW68KisBd/7TmavzPDlL2bpoDK5AjR2ZYrqU4TlGwM88GtQfvduBCAlSCj20X0w/4+rWMkseD9dAAkacjiyQ==}
-    peerDependencies:
-      '@capacitor/core': ^6.1.0
 
   '@capacitor/local-notifications@6.1.0':
     resolution: {integrity: sha512-EjEnbApdFiZYeJgxKIDtgFRNSmeHySnyAeyoTn6HUTYMkTOaHFGAd7NU964k7gbX4al/CBp0cMA8iMG0c7kh1w==}
@@ -3854,8 +3838,8 @@ packages:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
     engines: {node: '>=0.6'}
 
-  torrent-client@https://codeload.github.com/hayase-app/torrent-client/tar.gz/337d9ad637b651dfef0e2b152863f2687e7aa11e:
-    resolution: {tarball: https://codeload.github.com/hayase-app/torrent-client/tar.gz/337d9ad637b651dfef0e2b152863f2687e7aa11e}
+  torrent-client@https://codeload.github.com/hayase-app/torrent-client/tar.gz/c2e31e25893a1c6145f483c6625c18a038690e26:
+    resolution: {tarball: https://codeload.github.com/hayase-app/torrent-client/tar.gz/c2e31e25893a1c6145f483c6625c18a038690e26}
     version: 1.0.0
 
   torrent-discovery@11.0.17:
@@ -4355,10 +4339,6 @@ snapshots:
     dependencies:
       '@capacitor/core': 6.1.2
 
-  '@capacitor/app-launcher@6.0.2(@capacitor/core@6.1.2)':
-    dependencies:
-      '@capacitor/core': 6.1.2
-
   '@capacitor/app@6.0.1(@capacitor/core@6.1.2)':
     dependencies:
       '@capacitor/core': 6.1.2
@@ -4439,10 +4419,6 @@ snapshots:
       tslib: 2.7.0
 
   '@capacitor/device@6.0.1(@capacitor/core@6.1.2)':
-    dependencies:
-      '@capacitor/core': 6.1.2
-
-  '@capacitor/ios@6.1.2(@capacitor/core@6.1.2)':
     dependencies:
       '@capacitor/core': 6.1.2
 
@@ -8686,7 +8662,7 @@ snapshots:
 
   toidentifier@1.0.1: {}
 
-  torrent-client@https://codeload.github.com/hayase-app/torrent-client/tar.gz/337d9ad637b651dfef0e2b152863f2687e7aa11e:
+  torrent-client@https://codeload.github.com/hayase-app/torrent-client/tar.gz/c2e31e25893a1c6145f483c6625c18a038690e26:
     dependencies:
       bittorrent-peerid: 1.3.6
       matroska-metadata: 1.0.7

@@ -4,7 +4,7 @@ import type {
   PluginListenerHandle
 } from '@capacitor/core'
 
-export interface PermissionStatus {
+interface PermissionStatus {
   publicStorage: PermissionState
 }
 
@@ -89,200 +89,7 @@ export enum Directory {
   PortableStorage = 'PORTABLE_STORAGE',
 }
 
-export enum Encoding {
-  /**
-   * Eight-bit UCS Transformation Format
-   *
-   * @since 1.0.0
-   */
-  UTF8 = 'utf8',
-
-  /**
-   * Seven-bit ASCII, a.k.a. ISO646-US, a.k.a. the Basic Latin block of the
-   * Unicode character set
-   * This encoding is only supported on Android.
-   *
-   * @since 1.0.0
-   */
-  ASCII = 'ascii',
-
-  /**
-   * Sixteen-bit UCS Transformation Format, byte order identified by an
-   * optional byte-order mark
-   * This encoding is only supported on Android.
-   *
-   * @since 1.0.0
-   */
-  UTF16 = 'utf16',
-}
-
-export interface WriteFileOptions {
-  /**
-   * The path of the file to write
-   *
-   * @since 1.0.0
-   */
-  path: string
-
-  /**
-   * The data to write
-   *
-   * Note: Blob data is only supported on Web.
-   *
-   * @since 1.0.0
-   */
-  data: string | Blob
-
-  /**
-   * The `Directory` to store the file in
-   *
-   * @since 1.0.0
-   */
-  directory?: Directory
-
-  /**
-   * The encoding to write the file in. If not provided, data
-   * is written as base64 encoded.
-   *
-   * Pass Encoding.UTF8 to write data as string
-   *
-   * @since 1.0.0
-   */
-  encoding?: Encoding
-
-  /**
-   * Whether to create any missing parent directories.
-   *
-   * @default false
-   * @since 1.0.0
-   */
-  recursive?: boolean
-}
-
-export interface AppendFileOptions {
-  /**
-   * The path of the file to append
-   *
-   * @since 1.0.0
-   */
-  path: string
-
-  /**
-   * The data to write
-   *
-   * @since 1.0.0
-   */
-  data: string
-
-  /**
-   * The `Directory` to store the file in
-   *
-   * @since 1.0.0
-   */
-  directory?: Directory
-
-  /**
-   * The encoding to write the file in. If not provided, data
-   * is written as base64 encoded.
-   *
-   * Pass Encoding.UTF8 to write data as string
-   *
-   * @since 1.0.0
-   */
-  encoding?: Encoding
-}
-
-export interface ReadFileOptions {
-  /**
-   * The path of the file to read
-   *
-   * @since 1.0.0
-   */
-  path: string
-
-  /**
-   * The `Directory` to read the file from
-   *
-   * @since 1.0.0
-   */
-  directory?: Directory
-
-  /**
-   * The encoding to read the file in, if not provided, data
-   * is read as binary and returned as base64 encoded.
-   *
-   * Pass Encoding.UTF8 to read data as string
-   *
-   * @since 1.0.0
-   */
-  encoding?: Encoding
-}
-
-export interface DeleteFileOptions {
-  /**
-   * The path of the file to delete
-   *
-   * @since 1.0.0
-   */
-  path: string
-
-  /**
-   * The `Directory` to delete the file from
-   *
-   * @since 1.0.0
-   */
-  directory?: Directory
-}
-
-export interface MkdirOptions {
-  /**
-   * The path of the new directory
-   *
-   * @since 1.0.0
-   */
-  path: string
-
-  /**
-   * The `Directory` to make the new directory in
-   *
-   * @since 1.0.0
-   */
-  directory?: Directory
-
-  /**
-   * Whether to create any missing parent directories as well.
-   *
-   * @default false
-   * @since 1.0.0
-   */
-  recursive?: boolean
-}
-
-export interface RmdirOptions {
-  /**
-   * The path of the directory to remove
-   *
-   * @since 1.0.0
-   */
-  path: string
-
-  /**
-   * The `Directory` to remove the directory from
-   *
-   * @since 1.0.0
-   */
-  directory?: Directory
-
-  /**
-   * Whether to recursively remove the contents of the directory
-   *
-   * @default false
-   * @since 1.0.0
-   */
-  recursive?: boolean
-}
-
-export interface ReaddirOptions {
+interface ReaddirOptions {
   /**
    * The path of the directory to read
    *
@@ -298,23 +105,7 @@ export interface ReaddirOptions {
   directory?: Directory
 }
 
-export interface GetUriOptions {
-  /**
-   * The path of the file to get the URI for
-   *
-   * @since 1.0.0
-   */
-  path: string
-
-  /**
-   * The `Directory` to get the file under
-   *
-   * @since 1.0.0
-   */
-  directory: Directory
-}
-
-export interface StatOptions {
+interface StatOptions {
   /**
    * The path of the file to get data about
    *
@@ -330,60 +121,7 @@ export interface StatOptions {
   directory?: Directory
 }
 
-export interface CopyOptions {
-  /**
-   * The existing file or directory
-   *
-   * @since 1.0.0
-   */
-  from: string
-
-  /**
-   * The destination file or directory
-   *
-   * @since 1.0.0
-   */
-  to: string
-
-  /**
-   * The `Directory` containing the existing file or directory
-   *
-   * @since 1.0.0
-   */
-  directory?: Directory
-
-  /**
-   * The `Directory` containing the destination file or directory. If not supplied will use the 'directory'
-   * parameter as the destination
-   *
-   * @since 1.0.0
-   */
-  toDirectory?: Directory
-}
-
-export type RenameOptions = CopyOptions
-
-export interface ReadFileResult {
-  /**
-   * The representation of the data contained in the file
-   *
-   * Note: Blob is only available on Web. On native, the data is returned as a string.
-   *
-   * @since 1.0.0
-   */
-  data: string | Blob
-}
-
-export interface WriteFileResult {
-  /**
-   * The uri where the file was written into
-   *
-   * @since 1.0.0
-   */
-  uri: string
-}
-
-export interface ReaddirResult {
+interface ReaddirResult {
   /**
    * List of files and directories inside the directory
    *
@@ -392,7 +130,7 @@ export interface ReaddirResult {
   files: FileInfo[]
 }
 
-export interface FileInfo {
+interface FileInfo {
   /**
    * Name of the file or directory.
    */
@@ -435,16 +173,7 @@ export interface FileInfo {
   uri: string
 }
 
-export interface GetUriResult {
-  /**
-   * The uri of the file
-   *
-   * @since 1.0.0
-   */
-  uri: string
-}
-
-export interface StatResult {
+interface StatResult {
   /**
    * Type of the file.
    *
@@ -483,16 +212,7 @@ export interface StatResult {
   uri: string
 }
 
-export interface CopyResult {
-  /**
-   * The uri where the file was copied into
-   *
-   * @since 4.0.0
-   */
-  uri: string
-}
-
-export interface isPortableStorageAvailableResult {
+interface isPortableStorageAvailableResult {
   /**
    * Is portable storage available (SD Card)
    * Only available on Android
@@ -502,7 +222,7 @@ export interface isPortableStorageAvailableResult {
   available: boolean
 }
 
-export interface DownloadFileOptions extends HttpOptions {
+interface DownloadFileOptions extends HttpOptions {
   /**
    * The path the downloaded file should be moved to.
    *
@@ -534,7 +254,7 @@ export interface DownloadFileOptions extends HttpOptions {
   recursive?: boolean
 }
 
-export interface DownloadFileResult {
+interface DownloadFileResult {
   /**
    * The path the file was downloaded to.
    *
@@ -550,7 +270,7 @@ export interface DownloadFileResult {
   blob?: Blob
 }
 
-export interface ProgressStatus {
+interface ProgressStatus {
   /**
    * The url of the file being downloaded.
    *
@@ -576,51 +296,9 @@ export interface ProgressStatus {
  *
  * @since 5.1.0
  */
-export type ProgressListener = (progress: ProgressStatus) => void
+type ProgressListener = (progress: ProgressStatus) => void
 
 export interface FilesystemPlugin {
-  /**
-   * Read a file from disk
-   *
-   * @since 1.0.0
-   */
-  readFile: (options: ReadFileOptions) => Promise<ReadFileResult>
-
-  /**
-   * Write a file to disk in the specified location on device
-   *
-   * @since 1.0.0
-   */
-  writeFile: (options: WriteFileOptions) => Promise<WriteFileResult>
-
-  /**
-   * Append to a file on disk in the specified location on device
-   *
-   * @since 1.0.0
-   */
-  appendFile: (options: AppendFileOptions) => Promise<void>
-
-  /**
-   * Delete a file from disk
-   *
-   * @since 1.0.0
-   */
-  deleteFile: (options: DeleteFileOptions) => Promise<void>
-
-  /**
-   * Create a directory.
-   *
-   * @since 1.0.0
-   */
-  mkdir: (options: MkdirOptions) => Promise<void>
-
-  /**
-   * Remove a directory
-   *
-   * @since 1.0.0
-   */
-  rmdir: (options: RmdirOptions) => Promise<void>
-
   /**
    * Return a list of files from the directory (not recursive)
    *
@@ -629,32 +307,11 @@ export interface FilesystemPlugin {
   readdir: (options: ReaddirOptions) => Promise<ReaddirResult>
 
   /**
-   * Return full File URI for a path and directory
-   *
-   * @since 1.0.0
-   */
-  getUri: (options: GetUriOptions) => Promise<GetUriResult>
-
-  /**
    * Return data about a file
    *
    * @since 1.0.0
    */
   stat: (options: StatOptions) => Promise<StatResult>
-
-  /**
-   * Rename a file or directory
-   *
-   * @since 1.0.0
-   */
-  rename: (options: RenameOptions) => Promise<void>
-
-  /**
-   * Copy a file or directory
-   *
-   * @since 1.0.0
-   */
-  copy: (options: CopyOptions) => Promise<CopyResult>
 
   /**
    * Check if portable storage is available (SD Card for Android)
@@ -699,51 +356,3 @@ export interface FilesystemPlugin {
     listenerFunc: ProgressListener,
   ) => Promise<PluginListenerHandle> & PluginListenerHandle
 }
-
-/**
- * @deprecated Use `ReadFileOptions`.
- * @since 1.0.0
- */
-export type FileReadOptions = ReadFileOptions
-
-/**
- * @deprecated Use `ReadFileResult`.
- * @since 1.0.0
- */
-export type FileReadResult = ReadFileResult
-
-/**
- * @deprecated Use `WriteFileOptions`.
- * @since 1.0.0
- */
-export type FileWriteOptions = WriteFileOptions
-
-/**
- * @deprecated Use `WriteFileResult`.
- * @since 1.0.0
- */
-export type FileWriteResult = WriteFileResult
-
-/**
- * @deprecated Use `AppendFileOptions`.
- * @since 1.0.0
- */
-export type FileAppendOptions = AppendFileOptions
-
-/**
- * @deprecated Use `DeleteFileOptions`.
- * @since 1.0.0
- */
-export type FileDeleteOptions = DeleteFileOptions
-
-/**
- * @deprecated Use `Directory`.
- * @since 1.0.0
- */
-export const FilesystemDirectory = Directory
-
-/**
- * @deprecated Use `Encoding`.
- * @since 1.0.0
- */
-export const FilesystemEncoding = Encoding

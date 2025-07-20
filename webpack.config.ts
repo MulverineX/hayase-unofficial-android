@@ -1,17 +1,13 @@
 import { join, resolve } from 'node:path'
-import { env } from 'node:process'
 
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import { type Configuration, optimize } from 'webpack'
 import LicensePlugin from 'webpack-license-plugin'
 import 'webpack-dev-server'
 
-const mode = env.NODE_ENV?.trim() as 'development' | 'none' | 'production' | undefined ?? 'development'
-
 /** @type {import('webpack').Configuration} */
 const config: Configuration[] = [
   {
-    devtool: mode === 'development' ? 'source-map' : false,
     entry: [join(__dirname, 'src', 'background.ts')],
     output: {
       path: join(__dirname, 'build', 'nodejs'),
@@ -75,7 +71,6 @@ const config: Configuration[] = [
     ]
   },
   {
-    devtool: mode === 'development' ? 'source-map' : false,
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.json']
     },

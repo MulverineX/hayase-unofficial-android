@@ -5,13 +5,11 @@
   "devDependencies": {
     "@capacitor/android": "^6.1.2",
     "@capacitor/app": "^6.0.1",
-    "@capacitor/app-launcher": "^6.0.2",
     "@capacitor/assets": "github:thaunknown/capacitor-assets",
     "@capacitor/browser": "^6.0.2",
     "@capacitor/cli": "^6.1.2",
     "@capacitor/core": "^6.1.2",
     "@capacitor/device": "^6.0.1",
-    "@capacitor/ios": "^6.1.2",
     "@capacitor/local-notifications": "^6.1.0",
     "@capacitor/share": "6.0.3",
     "@types/webpack": "^5.28.5",
@@ -54,5 +52,5 @@
     "dev:logcat-disable": "adb shell setprop persist.log.tag S",
     "test:e2e": "cross-env NODE_ENV=production run-s build:web dev:android"
   },
-  "version": "6.4.4"
+  "version": "6.4.5"
 }

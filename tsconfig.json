@@ -22,7 +22,8 @@
     "scripts",
     "test",
     "tests",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "android"
   ],
   "ts-node": {
     "esm": true,
