@@ -11,13 +11,11 @@
     "@capacitor/cli": "^6.1.2",
     "@capacitor/core": "^6.1.2",
     "@capacitor/device": "^6.0.1",
-    "@capacitor/filesystem": "6.0.3",
     "@capacitor/ios": "^6.1.2",
     "@capacitor/local-notifications": "^6.1.0",
     "@capacitor/share": "6.0.3",
     "@types/webpack": "^5.28.5",
     "abslink": "^1.1.2",
-    "capacitor-folder-picker": "^0.0.2",
     "capacitor-intent-uri": "^0.0.2",
     "capacitor-nodejs": "https://github.com/funniray/Capacitor-NodeJS/releases/download/nodejs-18/capacitor-nodejs-1.0.0-beta.6.tgz",
     "concurrently": "^9.0.1",
@@ -56,5 +54,5 @@
     "dev:logcat-disable": "adb shell setprop persist.log.tag S",
     "test:e2e": "cross-env NODE_ENV=production run-s build:web dev:android"
   },
-  "version": "6.4.3"
+  "version": "6.4.4"
 }

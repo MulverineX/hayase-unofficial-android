@@ -59,6 +59,7 @@ public class MainActivity extends BridgeActivity {
     this.queue = Volley.newRequestQueue(this);
     registerPlugin(MediaNotificationPlugin.class);
     registerPlugin(EngagePlugin.class);
+    registerPlugin(FilesystemPlugin.class);
 
     super.onCreate(savedInstanceState);
 
@@ -126,6 +127,7 @@ public class MainActivity extends BridgeActivity {
         }
         
         if (url.startsWith("https://graphql.anilist.co") && "OPTIONS".equals(method)) {
+          headers.put("Access-Control-Allow-Origin", "*");
           headers.put("Cache-Control", "public, max-age=86400");
           headers.put("access-control-max-age", "86400");
         }

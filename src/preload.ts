@@ -3,16 +3,15 @@ import { App } from '@capacitor/app'
 import { Browser } from '@capacitor/browser'
 import { Device } from '@capacitor/device'
 // import { LocalNotifications } from '@capacitor/local-notifications'
-import { Filesystem } from '@capacitor/filesystem'
 import { Share } from '@capacitor/share'
 import { proxy, wrap as _wrap, type Endpoint, type Remote } from 'abslink'
-import { FolderPicker } from 'capacitor-folder-picker'
 import { IntentUri } from 'capacitor-intent-uri'
 import { type ChannelListenerCallback, NodeJS } from 'capacitor-nodejs'
 
 // import engage from './engage'
 // import { PlatformType, WatchNextType } from './engage/definitions'
 import MediaSessionPlugin from './mediasession'
+import fs, { Directory } from './storage'
 import './serializers/error'
 // import { SafeArea } from 'capacitor-plugin-safe-area'
 
@@ -230,7 +229,7 @@ if (!window.native) {
 
   const DEFAULTS = {
     player: '',
-    torrentPath: '',
+    torrentPath: 'cache' as 'cache' | 'internal' | 'sdcard',
     torrentSettings: {
       torrentPersist: false,
       torrentDHT: false,
@@ -270,21 +269,44 @@ if (!window.native) {
 
   const store = new Store()
 
-  const STORAGE_TYPE_MAP = {
-    primary: '/sdcard/',
-    secondary: '/sdcard/'
+  async function sendNodeSettings (id: 'init' | 'settings') {
+    let path = await storageTypeToPath(store.data.torrentPath)
+    if (path) path += '/hayase'
+    NodeJS.send({ eventName: 'port-init', args: [{ id, data: { ...store.data.torrentSettings, path } }] })
   }
 
-  // might be required in folder picker plugin
-  // final int takeFlags = intent.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-  // getActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
-
   const torrent = NodeJS.whenReady().then(async () => {
-    if (store.data.torrentPath) await Filesystem.requestPermissions()
-    NodeJS.send({ eventName: 'port-init', args: [{ id: 'init', data: { ...store.data.torrentSettings, path: store.data.torrentPath } }] })
+    await sendNodeSettings('init')
     return wrap<TorrentClient>()
   })
   const version = App.getInfo().then(info => info.version)
+
+  async function storageTypeToPath (type?: 'cache' | 'internal' | 'sdcard') {
+    try {
+      if (type !== 'cache') await fs.requestPermissions()
+      let path: string | undefined
+      if (type === 'sdcard') {
+        if ((await fs.isPortableStorageAvailable()).available) {
+          const { uri } = await fs.stat({ path: '', directory: Directory.PortableStorage })
+          const match = uri.match(/file:\/\/\/storage\/([A-z0-9]{4}-[A-z0-9]{4})\/Android\/data/)
+          if (match) {
+            const [, type] = match
+            if (type) {
+              path = `/storage/${type}/Download`
+            }
+          }
+        }
+      } else if (type === 'cache') {
+        path = ''
+      }
+
+      path ??= '/storage/emulated/0/Download'
+
+      return path
+    } catch {
+      return ''
+    }
+  }
 
   const stateMapping = {
     none: 6, // 0
@@ -304,28 +326,12 @@ if (!window.native) {
 
   const native: Partial<Native> = {
     openURL: (url: string) => Browser.open({ url }),
-    selectDownload: async () => {
-      const result = await FolderPicker.chooseFolder() as unknown as { path: string }
-      const normalizedPath = decodeURIComponent(result.path)
-
-      const [, uri, ...path] = normalizedPath.split(':')
-      const [,, app, subpath, type, ...rest] = uri!.split('/')
-
-      if (app !== 'com.android.externalstorage.documents') throw new Error('Unverified app', { cause: 'Expected com.android.externalstorage.documents, got: ' + app })
-      if (rest.length) throw new Error('Unsupported uri', { cause: 'Unxpected access type, got: tree/' + rest.join('/') })
-      if (subpath !== 'tree') throw new Error('Unsupported subpath type', { cause: 'Expected tree subpath, got: ' + subpath })
-
-      let base = STORAGE_TYPE_MAP[type as keyof typeof STORAGE_TYPE_MAP]
-      if (!base) {
-        if (!/[a-z0-9]{4}-[a-z0-9]{4}/i.test(type!)) throw new Error('Unsupported storage type')
-        base = `/storage/${type}/`
-      }
-
-      const respath = base + path.join('')
-
-      store.set('torrentPath', respath)
-
-      return respath
+    selectDownload: async (type?: 'cache' | 'internal' | 'sdcard') => {
+      const path = await storageTypeToPath(type)
+      await (await torrent).verifyDirectoryPermissions(path)
+      store.set('torrentPath', type ?? 'cache')
+      await sendNodeSettings('settings')
+      return path
     },
     // getLogs: () => main.getLogs(),
     getDeviceInfo: async () => ({
@@ -358,7 +364,7 @@ if (!window.native) {
     updateSettings: async (settings) => {
       store.set('torrentSettings', settings)
       await torrent
-      NodeJS.send({ eventName: 'port-init', args: [{ id: 'settings', data: { ...store.data.torrentSettings, path: store.data.torrentPath } }] })
+      await sendNodeSettings('settings')
     },
     cachedTorrents: async () => await (await torrent).cached(),
     isApp: true,
