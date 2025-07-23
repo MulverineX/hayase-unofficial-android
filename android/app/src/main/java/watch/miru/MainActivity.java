@@ -26,12 +26,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends BridgeActivity {
   private final Map<WebView, Dialog> popupDialogs = new HashMap<>();
@@ -40,7 +44,8 @@ public class MainActivity extends BridgeActivity {
   @Override
   public void onDestroy() {
     try {
-      CapacitorNodeJSPlugin capacitorNodeJS = (CapacitorNodeJSPlugin) getBridge().getPlugin("CapacitorNodeJS").getInstance();
+      CapacitorNodeJSPlugin capacitorNodeJS = (CapacitorNodeJSPlugin) getBridge().getPlugin("CapacitorNodeJS")
+          .getInstance();
       Field f = CapacitorNodeJSPlugin.class.getDeclaredField("implementation");
       f.setAccessible(true);
       CapacitorNodeJS implementation = (CapacitorNodeJS) f.get(capacitorNodeJS);
@@ -51,9 +56,10 @@ public class MainActivity extends BridgeActivity {
     } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
       Log.e("Destroy", "Failed to send destroy message to NodeJS", e);
     }
-    
+
     super.onDestroy();
   }
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     this.queue = Volley.newRequestQueue(this);
@@ -67,7 +73,8 @@ public class MainActivity extends BridgeActivity {
       if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
         WebView.setWebContentsDebuggingEnabled(true);
       }
-      // Attempt to set command line flags (may not work on all devices/versions, if at all)
+      // Attempt to set command line flags (may not work on all devices/versions, if
+      // at all)
       String commandLine = "--enable-blink-features=AudioVideoTracks --enable-experimental-web-platform-features";
       System.setProperty("chromium.command_line", commandLine);
     } catch (Exception e) {
@@ -86,7 +93,8 @@ public class MainActivity extends BridgeActivity {
 
     hideSystemUI();
 
-    // Set user agent to include AndroidTV if device supports Leanback or was launched with LEANBACK_LAUNCHER
+    // Set user agent to include AndroidTV if device supports Leanback or was
+    // launched with LEANBACK_LAUNCHER
     boolean isLeanback = getPackageManager().hasSystemFeature("android.software.leanback")
         || getPackageManager().hasSystemFeature("android.software.leanback_only");
     boolean isLeanbackIntent = false;
@@ -112,59 +120,135 @@ public class MainActivity extends BridgeActivity {
 
       @Override
       public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-        WebResourceResponse response = super.shouldInterceptRequest(view, request);
-        
-        // If no custom response, let the default handling occur
-        if (response == null) {
-          return null;
+        if (request == null || request.getUrl() == null) {
+          return super.shouldInterceptRequest(view, request);
         }
-        
-        String url = request.getUrl().toString();
-        String method = request.getMethod();
-        Map<String, String> headers = response.getResponseHeaders();
-        if (headers == null) {
-          headers = new HashMap<>();
+
+        String urlString = request.getUrl().toString();
+
+        boolean isMAL = urlString.startsWith("https://myanimelist.net/v1/oauth2")
+            || urlString.startsWith("https://api.myanimelist.net/v2/");
+
+        boolean isAL = urlString.startsWith("https://graphql.anilist.co");
+
+        if (!isMAL && !isAL) {
+          return super.shouldInterceptRequest(view, request);
         }
-        
-        if (url.startsWith("https://graphql.anilist.co") && "OPTIONS".equals(method)) {
-          headers.put("Access-Control-Allow-Origin", "*");
-          headers.put("Cache-Control", "public, max-age=86400");
-          headers.put("access-control-max-age", "86400");
+
+        boolean isOptions = "OPTIONS".equals(request.getMethod());
+
+        if (isAL && !isOptions) {
+          return super.shouldInterceptRequest(view, request);
         }
-        
-        // MAL CORS fix - doesn't implement CORS properly
-        if (url.startsWith("https://myanimelist.net/v1/oauth2") || url.startsWith("https://api.myanimelist.net/v2/")) {
-          headers.put("Access-Control-Allow-Origin", "*");
-          headers.put("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
-          headers.put("Access-Control-Allow-Headers", "*");
-          headers.put("Access-Control-Allow-Credentials", "true");
-          
-          if ("OPTIONS".equals(method) && response.getStatusCode() == 405) {
-            return new WebResourceResponse(
-                response.getMimeType(),
-                response.getEncoding(),
-                200,
-                "OK",
-                headers,
-                response.getData()
-            );
+
+        Map<String, String> responseHeaders = new HashMap<>();
+        responseHeaders.put("Access-Control-Allow-Origin", "*");
+        responseHeaders.put("Cache-Control", "public, max-age=86400");
+        responseHeaders.put("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
+        responseHeaders.put("access-control-max-age", "86400");
+        responseHeaders.put("Access-Control-Allow-Headers", "*");
+        responseHeaders.put("Access-Control-Allow-Credentials", "true");
+
+        // Override MAL and AL CORS preflight requests
+        if (isOptions) {
+          return new WebResourceResponse("application/json", "UTF-8", 200, "OK", responseHeaders, null);
+        }
+
+        // Rewrite only MAL responses
+        HttpURLConnection connection = null;
+        try {
+          String originalUrl = urlString;
+          URL url;
+          String requestBody = null;
+
+          // Extract query parameters and convert them to request body for POST/PATCH
+          // requests, because Android requests don't contain the body in the
+          // request object... bruh
+          if ("POST".equals(request.getMethod()) || "PATCH".equals(request.getMethod())) {
+            java.net.URI uri = new java.net.URI(originalUrl);
+            String query = uri.getQuery();
+
+            if (query != null && !query.isEmpty()) {
+              // Remove query parameters from URL for the actual request
+              String baseUrl = originalUrl.substring(0, originalUrl.indexOf('?'));
+              url = new URL(baseUrl);
+
+              // Use the query string as the request body
+              requestBody = query;
+            } else {
+              url = new URL(originalUrl);
+            }
+          } else {
+            url = new URL(originalUrl);
           }
+
+          connection = (HttpURLConnection) url.openConnection();
+
+          Map<String, String> requestHeaders = request.getRequestHeaders();
+          for (Map.Entry<String, String> entry : requestHeaders.entrySet()) {
+            connection.setRequestProperty(entry.getKey(), entry.getValue());
+          }
+
+          // Set the request method
+          connection.setRequestMethod(request.getMethod());
+
+          // Send the request body for POST/PATCH requests
+          if (requestBody != null && ("POST".equals(request.getMethod()) || "PATCH".equals(request.getMethod()))) {
+            connection.setDoOutput(true);
+
+            // Write the request body
+            try (java.io.OutputStream os = connection.getOutputStream()) {
+              byte[] input = requestBody.getBytes("UTF-8");
+              os.write(input, 0, input.length);
+            }
+          }
+
+          int statusCode = connection.getResponseCode();
+          String reasonPhrase = connection.getResponseMessage();
+          String mimeType = connection.getContentType();
+          String encoding = connection.getContentEncoding();
+
+          // Use getErrorStream() for errors, getInputStream() for success
+          InputStream responseStream;
+          if (statusCode >= 200 && statusCode < 300) {
+            responseStream = connection.getInputStream();
+          } else {
+            responseStream = connection.getErrorStream();
+            // If errorStream is also null, create an empty stream
+            if (responseStream == null) {
+              responseStream = new java.io.ByteArrayInputStream(new byte[0]);
+            }
+          }
+
+          Map<String, List<String>> headerFields = connection.getHeaderFields();
+          for (Map.Entry<String, List<String>> entry : headerFields.entrySet()) {
+            if (entry.getKey() != null) {
+              responseHeaders.put(entry.getKey(), String.join(", ", entry.getValue()));
+            }
+          }
+
+          return new WebResourceResponse(
+              mimeType != null ? mimeType : "application/json",
+              encoding != null ? encoding : "UTF-8",
+              statusCode,
+              reasonPhrase,
+              responseHeaders,
+              responseStream);
+
+        } catch (Exception e) {
+          Log.e("WebViewClient", "Error occurred while intercepting request", e);
+          if (connection != null) {
+            connection.disconnect();
+          }
+          return super.shouldInterceptRequest(view, request);
         }
-        
-        return new WebResourceResponse(
-            response.getMimeType(),
-            response.getEncoding(),
-            response.getStatusCode(),
-            response.getReasonPhrase(),
-            headers,
-            response.getData()
-        );
       }
     });
-  
+
     // make js window.open() work just like in a browser
     webView.setWebChromeClient(new WebChromeClient() {
-      // these 2 overrides are needed to re-implement fullscreen mode which breaks by overriding chromeClient
+      // these 2 overrides are needed to re-implement fullscreen mode which breaks by
+      // overriding chromeClient
       private View mCustomView;
       private WebChromeClient.CustomViewCallback mCustomViewCallback;
       private int mOriginalSystemUiVisibility;
@@ -178,7 +262,8 @@ public class MainActivity extends BridgeActivity {
         mCustomView = view;
         mCustomViewCallback = callback;
 
-        // Add the custom view to the main content view, not decor view, to preserve insets
+        // Add the custom view to the main content view, not decor view, to preserve
+        // insets
         ViewGroup contentView = findViewById(android.R.id.content);
         contentView.addView(mCustomView, new RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT,
@@ -201,13 +286,14 @@ public class MainActivity extends BridgeActivity {
       public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
         WebView popupWebView = new WebView(MainActivity.this);
         WebSettings webSettings = popupWebView.getSettings();
-        
+
         WebSettings mainSettings = view.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDomStorageEnabled(mainSettings.getDomStorageEnabled()); // AL requires this LOL
         webSettings.setAllowContentAccess(mainSettings.getAllowContentAccess());
-        
-        // Set the same WebChromeClient as the main WebView so window.close() works, IMPORTANT
+
+        // Set the same WebChromeClient as the main WebView so window.close() works,
+        // IMPORTANT
         popupWebView.setWebChromeClient(this);
         popupWebView.setWebViewClient(new WebViewClient());
 
@@ -230,7 +316,9 @@ public class MainActivity extends BridgeActivity {
         // We return true to indicate that we have handled the new window creation.
         return true;
       }
-      // Also handle closing the popup window from JavaScript (e.g., window.close()), might not be needed
+
+      // Also handle closing the popup window from JavaScript (e.g., window.close()),
+      // might not be needed
       @Override
       public void onCloseWindow(WebView window) {
         super.onCloseWindow(window);
@@ -246,13 +334,12 @@ public class MainActivity extends BridgeActivity {
   private void hideSystemUI() {
     View decorView = getWindow().getDecorView();
     decorView.setSystemUiVisibility(
-      View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-      | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-      | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-      | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-      | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-      | View.SYSTEM_UI_FLAG_FULLSCREEN
-    );
+        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_FULLSCREEN);
   }
 
   private void injectJavaScript(WebView webView) {
