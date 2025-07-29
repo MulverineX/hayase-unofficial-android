@@ -75,7 +75,7 @@ public class MediaNotificationPlugin extends Plugin {
         currentImage = response;
         updateSessionMetadata(call); // Am I running on another thread? Is this safe?
         call.successCallback(new PluginResult());
-      }, error -> Log.e("MediaNotification", "Failed to load image from "+url, error));
+      }, error -> Log.e("MediaNotification", "Failed to load image from " + url, error));
       ((MainActivity) this.getBridge().getActivity()).queue.add(request);
     } else {
       updateSessionMetadata(call);
@@ -86,11 +86,11 @@ public class MediaNotificationPlugin extends Plugin {
 
   private void updateSessionMetadata(PluginCall call) {
     MediaMetadataCompat.Builder metadata = new MediaMetadataCompat.Builder() // This might be on the wrong thread?
-      .putString(METADATA_KEY_TITLE, call.getString("title"))
-      .putString(METADATA_KEY_DISPLAY_TITLE, call.getString("title"))
-      .putString(METADATA_KEY_DISPLAY_DESCRIPTION, call.getString("description"))
-      .putString(METADATA_KEY_ART_URI, call.getString("image"))
-      .putLong(METADATA_KEY_DURATION, (long) Math.floor(call.getDouble("duration", 0d)*1000));
+        .putString(METADATA_KEY_TITLE, call.getString("title"))
+        .putString(METADATA_KEY_DISPLAY_TITLE, call.getString("title"))
+        .putString(METADATA_KEY_DISPLAY_DESCRIPTION, call.getString("description"))
+        .putString(METADATA_KEY_ART_URI, call.getString("image"))
+        .putLong(METADATA_KEY_DURATION, (long) Math.floor(call.getDouble("duration", 0d) * 1000));
 
     if (currentImage != null) {
       metadata.putBitmap(METADATA_KEY_ART, currentImage);
@@ -103,17 +103,18 @@ public class MediaNotificationPlugin extends Plugin {
   public void setPlaybackState(PluginCall call) {
     MediaSessionCompat session = getSession();
     int state = call.getInt("state", 0);
-    long position = (long) Math.floor(call.getDouble("position", 0d)*1000);
+    long position = (long) Math.floor(call.getDouble("position", 0d) * 1000);
     float rate = call.getFloat("playbackRate", 0f);
-    Log.i("watch.miru", "Playstate updated "+state+" "+position+" "+rate);
+    Log.i("watch.miru", "Playstate updated " + state + " " + position + " " + rate);
 
     session.setPlaybackState(new PlaybackStateCompat.Builder()
-      .setState(state, position, rate)
-      .setActions(ACTION_PLAY | ACTION_PAUSE | ACTION_SKIP_TO_NEXT | ACTION_SKIP_TO_PREVIOUS | ACTION_STOP | ACTION_SEEK_TO | ACTION_FAST_FORWARD | ACTION_REWIND)
-      // TODO: Fix PiP Icon
-      .addCustomAction(new PlaybackStateCompat.CustomAction.Builder("enterpictureinpicture", "pip", android.R.drawable.ic_menu_crop).build())
-      .build()
-    );
+        .setState(state, position, rate)
+        .setActions(ACTION_PLAY | ACTION_PAUSE | ACTION_SKIP_TO_NEXT | ACTION_SKIP_TO_PREVIOUS | ACTION_STOP
+            | ACTION_SEEK_TO | ACTION_FAST_FORWARD | ACTION_REWIND)
+        .addCustomAction(
+            new PlaybackStateCompat.CustomAction.Builder("enterpictureinpicture", "pip", R.drawable.ic_pip_icon)
+                .build())
+        .build());
   }
 
   private class MediaCallback extends MediaSessionCompat.Callback {
@@ -157,7 +158,7 @@ public class MediaNotificationPlugin extends Plugin {
     @Override
     public void onSeekTo(long pos) {
       JSObject ret = new JSObject();
-      ret.put("seekTime", (pos/1000d));
+      ret.put("seekTime", (pos / 1000d));
       ret.put("fastSeek", true);
       notifyListeners("seekto", ret);
     }

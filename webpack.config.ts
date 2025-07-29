@@ -1,16 +1,18 @@
 import { join, resolve } from 'node:path'
 
 import CopyWebpackPlugin from 'copy-webpack-plugin'
-import { type Configuration, optimize } from 'webpack'
+import webpack, { type Configuration } from 'webpack'
 import LicensePlugin from 'webpack-license-plugin'
 import 'webpack-dev-server'
+
+const dirname = import.meta.dirname || new URL('.', import.meta.url).pathname
 
 /** @type {import('webpack').Configuration} */
 const config: Configuration[] = [
   {
-    entry: [join(__dirname, 'src', 'background.ts')],
+    entry: [join(dirname, 'src', 'background.ts')],
     output: {
-      path: join(__dirname, 'build', 'nodejs'),
+      path: join(dirname, 'build', 'nodejs'),
       filename: 'index.js',
       publicPath: './'
     },
@@ -53,8 +55,8 @@ const config: Configuration[] = [
       client: false
     },
     plugins: [
-      new CopyWebpackPlugin({ patterns: [{ from: join(__dirname, 'public', 'nodejs') }] }),
-      new optimize.LimitChunkCountPlugin({
+      new CopyWebpackPlugin({ patterns: [{ from: join(dirname, 'public', 'nodejs') }] }),
+      new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1
       }),
       new LicensePlugin({
@@ -75,7 +77,7 @@ const config: Configuration[] = [
       extensions: ['.ts', '.tsx', '.js', '.json']
     },
     plugins: [
-      new optimize.LimitChunkCountPlugin({
+      new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1
       }),
       new LicensePlugin({
@@ -99,9 +101,9 @@ const config: Configuration[] = [
         }
       ]
     },
-    entry: [join(__dirname, 'src', 'preload.ts')],
+    entry: [join(dirname, 'src', 'preload.ts')],
     output: {
-      path: join(__dirname, 'build'),
+      path: join(dirname, 'build'),
       filename: 'preload.js',
       publicPath: './'
     }

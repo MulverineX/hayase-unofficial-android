@@ -30,23 +30,29 @@ public class MediaNotificationService extends Service {
   private NotificationCompat.Style style = null;
   private MediaControllerCompat controller;
 
-  @Nullable @Override
+  @Nullable
+  @Override
   public IBinder onBind(Intent intent) {
     return null;
   }
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    if (intent == null) return START_STICKY;
+    if (intent == null)
+      return START_STICKY;
     if (Objects.equals(intent.getAction(), "watch.miru.action.PIP")) {
-      controller.sendCommand("enterpictureinpicture", null, null);
+      if (controller != null) {
+        controller.sendCommand("enterpictureinpicture", null, null);
+      }
       return START_STICKY;
     } else if (Objects.equals(intent.getAction(), "android.intent.action.MEDIA_BUTTON")) {
       if (!Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction()) || !intent.hasExtra(Intent.EXTRA_KEY_EVENT)) {
         return START_STICKY;
       }
       KeyEvent ke = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-      controller.dispatchMediaButtonEvent(ke);
+      if (controller != null) {
+        controller.dispatchMediaButtonEvent(ke);
+      }
       return START_STICKY;
     } else if (!intent.hasExtra("token")) {
       return START_STICKY;
@@ -67,10 +73,11 @@ public class MediaNotificationService extends Service {
 
     style = new androidx.media.app.NotificationCompat.MediaStyle().setMediaSession(token);
 
-    NotificationChannelCompat channel = new NotificationChannelCompat.Builder("playback", NotificationManager.IMPORTANCE_LOW)
-      .setName("Playback")
-      .setDescription("Media Playback Notifications")
-      .build();
+    NotificationChannelCompat channel = new NotificationChannelCompat.Builder("playback",
+        NotificationManager.IMPORTANCE_LOW)
+        .setName("Playback")
+        .setDescription("Media Playback Notifications")
+        .build();
 
     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
     notificationManager.createNotificationChannel(channel);
@@ -97,25 +104,31 @@ public class MediaNotificationService extends Service {
     PendingIntent openPendingIntent = PendingIntent.getActivity(this, 1, openIntent, PendingIntent.FLAG_IMMUTABLE);
 
     NotificationCompat.Builder notification = new NotificationCompat.Builder(this, "playback")
-      .setSmallIcon(R.mipmap.ic_launcher_foreground)
-      .setContentTitle(metadata == null ? "Unknown" : metadata.getDescription().getTitle())
-      .setContentText(metadata == null ? "Unknown" : metadata.getDescription().getDescription())
-      .setContentIntent(openPendingIntent)
-      .setStyle(style);
+        .setSmallIcon(R.mipmap.ic_launcher_foreground)
+        .setContentTitle(metadata == null ? "Unknown" : metadata.getDescription().getTitle())
+        .setContentText(metadata == null ? "Unknown" : metadata.getDescription().getDescription())
+        .setContentIntent(openPendingIntent)
+        .setStyle(style);
 
-    notification.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_previous, "Last Track", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)));
-    notification.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_rew, "Rewind", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_REWIND)));
+    notification.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_previous, "Last Track",
+        MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)));
+    notification.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_rew, "Rewind",
+        MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_REWIND)));
     if (controller.getPlaybackState() != null) {
       if (controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
-        notification.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_pause, "Pause", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_PAUSE)));
+        notification.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_pause, "Pause",
+            MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_PAUSE)));
       } else {
-        notification.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_play, "Play", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_PLAY)));
+        notification.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_play, "Play",
+            MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_PLAY)));
       }
     }
-    notification.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_ff, "Fast Forward", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_FAST_FORWARD)));
-    notification.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_next, "Next Track", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_SKIP_TO_NEXT)));
-    // TODO: Fix PiP Icon
-    notification.addAction(new NotificationCompat.Action(android.R.drawable.ic_menu_crop, "Enter PiP", pipPendingIntent));
+    notification.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_ff, "Fast Forward",
+        MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_FAST_FORWARD)));
+    notification.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_next, "Next Track",
+        MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_SKIP_TO_NEXT)));
+    notification
+        .addAction(new NotificationCompat.Action(R.drawable.ic_pip_icon, "Enter PiP", pipPendingIntent));
 
     if (metadata != null && metadata.getDescription().getIconBitmap() != null) {
       notification.setLargeIcon(metadata.getDescription().getIconBitmap());
@@ -126,7 +139,8 @@ public class MediaNotificationService extends Service {
 
   private void updateNotification() {
     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+    if (ActivityCompat.checkSelfPermission(this,
+        Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
       return;
     }
     notificationManager.notify(2, generateNotification());
@@ -149,13 +163,13 @@ public class MediaNotificationService extends Service {
 
     @Override
     public void onPlaybackStateChanged(@Nullable PlaybackStateCompat state) {
-      if (state == null) return;
+      if (state == null)
+        return;
       if (state.getState() != lastState) {
         lastState = state.getState();
         updateNotification();
       }
     }
   }
-
 
 }
