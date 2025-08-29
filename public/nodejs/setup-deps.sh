@@ -9,6 +9,8 @@
 # install other npm packages like normal
 # run this script
 
+cd public/nodejs
+
 if [ -d "node_modules" ]; then
     echo "node_modules already exists, skipping npm install"
 else

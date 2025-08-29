@@ -1,16 +1,14 @@
 FROM alpine:3.19 AS worker
 
-RUN apk add curl unzip
-RUN curl -L https://github.com/nodejs-mobile/nodejs-mobile/releases/download/v18.17.2/nodejs-mobile-v18.17.2-android.zip -o libnode.zip
-RUN unzip libnode.zip
+FROM saschpe/android-ndk:35-jdk23.0.2_7-ndk28.0.13004108-cmake3.31.5
 
-FROM saschpe/android-ndk:33-jdk17.0.8_7-ndk25.2.9519653-cmake3.22.1
+USER root
 
-COPY --from=worker ./nodejs-mobile* /opt/libnode
+COPY ../../nodejs-mobile /opt/libnode
 ENV LIBNODE_PATH=/opt/libnode
 
 # Install nodejs 18 (same version as nodejs-mobile)
-ARG NODE_MAJOR=18
+ARG NODE_MAJOR=24
 
 RUN apt-get update
 RUN apt-get install -y ca-certificates curl gnupg make

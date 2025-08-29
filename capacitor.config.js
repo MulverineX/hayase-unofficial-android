@@ -4,7 +4,6 @@ module.exports = {
   appId: 'watch.miru',
   appName: 'Hayase',
   webDir: 'build',
-  bundledWebRuntime: false,
   loggingBehavior: 'none',
   android: {
     buildOptions: {

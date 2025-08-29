@@ -1,14 +1,14 @@
 import { join, resolve } from 'node:path'
 
 import CopyWebpackPlugin from 'copy-webpack-plugin'
-import webpack, { type Configuration } from 'webpack'
+import webpack from 'webpack'
 import LicensePlugin from 'webpack-license-plugin'
 import 'webpack-dev-server'
 
 const dirname = import.meta.dirname || new URL('.', import.meta.url).pathname
 
-/** @type {import('webpack').Configuration} */
-const config: Configuration[] = [
+/** @type {import('webpack').Configuration[]} */
+const config = [
   {
     entry: [join(dirname, 'src', 'background.ts')],
     output: {
@@ -93,6 +93,12 @@ const config: Configuration[] = [
     ],
     module: {
       rules: [
+        {
+          test: /\.m?js$/,
+          resolve: {
+            fullySpecified: false
+          }
+        },
         {
           test: /\.tsx?$/,
           use: [
