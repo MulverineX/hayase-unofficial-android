@@ -11,8 +11,10 @@
     ]
   },
   "include": [
-    "./**/*.ts",
-    "./**/*.js"
+    "./*.ts",
+    "./*.js",
+    "./src/**/*.ts",
+    "./src/**/*.js"
   ],
   "exclude": [
     "node_modules",
@@ -23,7 +25,9 @@
     "test",
     "tests",
     "**/*.spec.ts",
-    "android"
+    "android",
+    "nodejs-mobile",
+    "public"
   ],
   "ts-node": {
     "esm": true,

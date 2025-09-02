@@ -35,6 +35,9 @@ importers:
       '@capacitor/share':
         specifier: 7.0.2
         version: 7.0.2(@capacitor/core@7.4.3)
+      '@capawesome-team/capacitor-android-foreground-service':
+        specifier: ^7.0.1
+        version: 7.0.1(@capacitor/core@7.4.3)
       '@types/webpack':
         specifier: ^5.28.5
         version: 5.28.5(webpack-cli@5.1.4)
@@ -46,7 +49,7 @@ importers:
         version: 0.0.2(@capacitor/core@7.4.3)
       capacitor-nodejs:
         specifier: git+https://github.com/hayase-app/capacitor-nodejs.git
-        version: git+https://github.com/hayase-app/capacitor-nodejs.git#21a57c0ed566280eb360b2c2c848889fff70ba01(@capacitor/core@7.4.3)
+        version: git+https://github.com/hayase-app/capacitor-nodejs.git#17df8083ad6a66d3307f82a723abca7a91fb1fe4(@capacitor/core@7.4.3)
       concurrently:
         specifier: ^9.2.1
         version: 9.2.1
@@ -69,11 +72,11 @@ importers:
         specifier: ^4.2.2
         version: 4.2.2
       eslint-config-standard-universal:
-        specifier: ^1.0.8
-        version: 1.0.8(@typescript-eslint/parser@8.36.0(eslint@9.30.1)(typescript@5.8.3))(ts-node@10.9.2(@types/node@22.7.5)(typescript@5.8.3))
+        specifier: ^1.0.9
+        version: 1.0.9(@typescript-eslint/parser@8.36.0(eslint@9.30.1)(typescript@5.8.3))(ts-node@10.9.2(@types/node@22.7.5)(typescript@5.8.3))
       native:
         specifier: github:hayase-app/native
-        version: https://codeload.github.com/hayase-app/native/tar.gz/c7307d5f3fe3cefbd71e139b3b6c30eedba9788e
+        version: https://codeload.github.com/hayase-app/native/tar.gz/b77747898ca7e4991fac752559ea159c8c0f5083
       nodejs-mobile-gyp:
         specifier: ^0.4.0
         version: 0.4.0
@@ -169,6 +172,11 @@ packages:
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
 
+  '@capawesome-team/capacitor-android-foreground-service@7.0.1':
+    resolution: {integrity: sha512-JjeINYZ5SL81TV1D2WYIE2fmd1MlxHbIzB2gsNKINt9Ge3gkbdh7P/Urb3gSPPz4UWJoUFiCLFaHBRJvu+EP6Q==}
+    peerDependencies:
+      '@capacitor/core': '>=7.0.0'
+
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
@@ -180,21 +188,11 @@ packages:
   '@epic-web/invariant@1.0.0':
     resolution: {integrity: sha512-lrTPqgvfFQtR/eY/qkIzp98OGdNJu0m5ji3q/nJI8v3SXkRKEnWiOxMmbvcSoAIzv/cGiuvRy57k4suKQSAdwA==}
 
-  '@eslint-community/eslint-utils@4.4.0':
-    resolution: {integrity: sha512-1/sA4dwrzBAyeUoQ6oxahHKmrZvsnLCg4RfxW3ZFGGmQkSNQPFNLV9CUEFQP1x9EYXHTo5p6xdhZM1Ne9p/AfA==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-    peerDependencies:
-      eslint: ^6.0.0 || ^7.0.0 || >=8.0.0
-
   '@eslint-community/eslint-utils@4.7.0':
     resolution: {integrity: sha512-dyybb3AcajC7uha6CvhdVRJqaKyn7w2YKqKyAN37NKYgZT36w+iRb0Dymmc5qEJ549c/S31cMMSFd75bteCpCw==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
       eslint: ^6.0.0 || ^7.0.0 || >=8.0.0
-
-  '@eslint-community/regexpp@4.11.1':
-    resolution: {integrity: sha512-m4DVN9ZqskZoLU5GlWZadwDnYo3vAEydiUayB9widCl9ffWx2IvPnp6n3on5rJmziJSw9Bv+Z3ChDVdMwXCY8Q==}
-    engines: {node: ^12.0.0 || ^14.0.0 || >=16.0.0}
 
   '@eslint-community/regexpp@4.12.1':
     resolution: {integrity: sha512-CCZCDJuduB9OUkFkY2IgppNZMi2lBQgD2qzwXkEia16cge2pijY/aXi96CJMquDMn3nJdlPV1A5KrJEXwfLNzQ==}
@@ -399,8 +397,8 @@ packages:
     resolution: {integrity: sha512-LtoMMhxAlorcGhmFYI+LhPgbPZCkgP6ra1YL604EeF6U98pLlQ3iWIGMdWSC+vWmPBWBNgmDBAhnAobLROJmwg==}
     engines: {node: '>=18'}
 
-  '@stylistic/eslint-plugin@4.4.1':
-    resolution: {integrity: sha512-CEigAk7eOLyHvdgmpZsKFwtiqS2wFwI1fn4j09IU9GmD4euFM4jEBAViWeCqaNLlbX2k2+A/Fq9cje4HQBXuJQ==}
+  '@stylistic/eslint-plugin@5.3.1':
+    resolution: {integrity: sha512-Ykums1VYonM0TgkD0VteVq9mrlO2FhF48MDJnPyv3MktIB2ydtuhlO0AfWm7xnW1kyf5bjOqA6xc7JjviuVTxg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       eslint: '>=9.0.0'
@@ -557,6 +555,10 @@ packages:
 
   '@typescript-eslint/types@8.36.0':
     resolution: {integrity: sha512-xGms6l5cTJKQPZOKM75Dl9yBfNdGeLRsIyufewnxT4vZTrjC0ImQT4fj8QmtJK84F58uSh5HVBSANwcfiXxABQ==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@typescript-eslint/types@8.41.0':
+    resolution: {integrity: sha512-9EwxsWdVqh42afLbHP90n2VdHaWU/oWgbH2P0CfcNfdKL7CuKpwMQGjwev56vWu9cSKU7FWSu6r9zck6CVfnag==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@typescript-eslint/typescript-estree@8.36.0':
@@ -1069,9 +1071,9 @@ packages:
     peerDependencies:
       '@capacitor/core': ^6.0.0
 
-  capacitor-nodejs@git+https://github.com/hayase-app/capacitor-nodejs.git#21a57c0ed566280eb360b2c2c848889fff70ba01:
-    resolution: {commit: 21a57c0ed566280eb360b2c2c848889fff70ba01, repo: https://github.com/hayase-app/capacitor-nodejs.git, type: git}
-    version: 1.0.0-beta.9
+  capacitor-nodejs@git+https://github.com/hayase-app/capacitor-nodejs.git#17df8083ad6a66d3307f82a723abca7a91fb1fe4:
+    resolution: {commit: 17df8083ad6a66d3307f82a723abca7a91fb1fe4, repo: https://github.com/hayase-app/capacitor-nodejs.git, type: git}
+    version: 2.1.0
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
 
@@ -1658,8 +1660,8 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
-  eslint-config-standard-universal@1.0.8:
-    resolution: {integrity: sha512-GYuMkU93hqkoYCsA+sRR0RlLTKCSuB2Yuzois/uWdaRq9Vu9U69gfvNlQLWU7Pkqcaw56Vwll9tTINVWTjl5Jg==}
+  eslint-config-standard-universal@1.0.9:
+    resolution: {integrity: sha512-UGtJQ/abqh4pSUF5optz+vPxsgja5RV5l/C8ys6X6jNTqlFpQOfWRcUh6MVPYJTZL8CazHZ7jq9ep6UICZ6XgA==}
 
   eslint-import-resolver-node@0.3.9:
     resolution: {integrity: sha512-WFj2isz22JahUv+B788TlO3N6zL3nNJGU8CcZbPZvVEkBPaJdCV4vy5wyghty5ROFbCRnm132v8BScu5/1BQ8g==}
@@ -2837,8 +2839,8 @@ packages:
     engines: {node: '>=16.0.0'}
     hasBin: true
 
-  native@https://codeload.github.com/hayase-app/native/tar.gz/c7307d5f3fe3cefbd71e139b3b6c30eedba9788e:
-    resolution: {tarball: https://codeload.github.com/hayase-app/native/tar.gz/c7307d5f3fe3cefbd71e139b3b6c30eedba9788e}
+  native@https://codeload.github.com/hayase-app/native/tar.gz/b77747898ca7e4991fac752559ea159c8c0f5083:
+    resolution: {tarball: https://codeload.github.com/hayase-app/native/tar.gz/b77747898ca7e4991fac752559ea159c8c0f5083}
     version: 1.0.0
 
   natural-compare@1.4.0:
@@ -3145,6 +3147,10 @@ packages:
 
   picomatch@4.0.2:
     resolution: {integrity: sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==}
+    engines: {node: '>=12'}
+
+  picomatch@4.0.3:
+    resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
     engines: {node: '>=12'}
 
   pidtree@0.3.1:
@@ -4465,6 +4471,10 @@ snapshots:
     dependencies:
       '@capacitor/core': 7.4.3
 
+  '@capawesome-team/capacitor-android-foreground-service@7.0.1(@capacitor/core@7.4.3)':
+    dependencies:
+      '@capacitor/core': 7.4.3
+
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
@@ -4473,17 +4483,10 @@ snapshots:
 
   '@epic-web/invariant@1.0.0': {}
 
-  '@eslint-community/eslint-utils@4.4.0(eslint@9.30.1)':
-    dependencies:
-      eslint: 9.30.1
-      eslint-visitor-keys: 3.4.3
-
   '@eslint-community/eslint-utils@4.7.0(eslint@9.30.1)':
     dependencies:
       eslint: 9.30.1
       eslint-visitor-keys: 3.4.3
-
-  '@eslint-community/regexpp@4.11.1': {}
 
   '@eslint-community/regexpp@4.12.1': {}
 
@@ -4773,17 +4776,15 @@ snapshots:
 
   '@sindresorhus/merge-streams@2.3.0': {}
 
-  '@stylistic/eslint-plugin@4.4.1(eslint@9.30.1)(typescript@5.8.3)':
+  '@stylistic/eslint-plugin@5.3.1(eslint@9.30.1)':
     dependencies:
-      '@typescript-eslint/utils': 8.36.0(eslint@9.30.1)(typescript@5.8.3)
+      '@eslint-community/eslint-utils': 4.7.0(eslint@9.30.1)
+      '@typescript-eslint/types': 8.41.0
       eslint: 9.30.1
       eslint-visitor-keys: 4.2.1
       espree: 10.4.0
       estraverse: 5.3.0
-      picomatch: 4.0.2
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
+      picomatch: 4.0.3
 
   '@thaunknown/simple-peer@10.0.11':
     dependencies:
@@ -4971,7 +4972,7 @@ snapshots:
 
   '@typescript-eslint/eslint-plugin@8.36.0(@typescript-eslint/parser@8.36.0(eslint@9.30.1)(typescript@5.8.3))(eslint@9.30.1)(typescript@5.8.3)':
     dependencies:
-      '@eslint-community/regexpp': 4.11.1
+      '@eslint-community/regexpp': 4.12.1
       '@typescript-eslint/parser': 8.36.0(eslint@9.30.1)(typescript@5.8.3)
       '@typescript-eslint/scope-manager': 8.36.0
       '@typescript-eslint/type-utils': 8.36.0(eslint@9.30.1)(typescript@5.8.3)
@@ -5028,6 +5029,8 @@ snapshots:
       - supports-color
 
   '@typescript-eslint/types@8.36.0': {}
+
+  '@typescript-eslint/types@8.41.0': {}
 
   '@typescript-eslint/typescript-estree@8.36.0(typescript@5.8.3)':
     dependencies:
@@ -5627,7 +5630,7 @@ snapshots:
     dependencies:
       '@capacitor/core': 7.4.3
 
-  capacitor-nodejs@git+https://github.com/hayase-app/capacitor-nodejs.git#21a57c0ed566280eb360b2c2c848889fff70ba01(@capacitor/core@7.4.3):
+  capacitor-nodejs@git+https://github.com/hayase-app/capacitor-nodejs.git#17df8083ad6a66d3307f82a723abca7a91fb1fe4(@capacitor/core@7.4.3):
     dependencies:
       '@capacitor/core': 7.4.3
 
@@ -5713,7 +5716,7 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.0
       '@types/estree': 1.0.6
-      acorn: 8.12.1
+      acorn: 8.15.0
       estree-walker: 3.0.3
       periscopic: 3.1.0
 
@@ -6295,9 +6298,9 @@ snapshots:
       eslint: 9.30.1
       semver: 7.6.3
 
-  eslint-config-standard-universal@1.0.8(@typescript-eslint/parser@8.36.0(eslint@9.30.1)(typescript@5.8.3))(ts-node@10.9.2(@types/node@22.7.5)(typescript@5.8.3)):
+  eslint-config-standard-universal@1.0.9(@typescript-eslint/parser@8.36.0(eslint@9.30.1)(typescript@5.8.3))(ts-node@10.9.2(@types/node@22.7.5)(typescript@5.8.3)):
     dependencies:
-      '@stylistic/eslint-plugin': 4.4.1(eslint@9.30.1)(typescript@5.8.3)
+      '@stylistic/eslint-plugin': 5.3.1(eslint@9.30.1)
       eslint: 9.30.1
       eslint-import-resolver-node: 0.3.9
       eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.36.0(eslint@9.30.1)(typescript@5.8.3))(eslint@9.30.1)
@@ -6336,8 +6339,8 @@ snapshots:
 
   eslint-plugin-es-x@7.8.0(eslint@9.30.1):
     dependencies:
-      '@eslint-community/eslint-utils': 4.4.0(eslint@9.30.1)
-      '@eslint-community/regexpp': 4.11.1
+      '@eslint-community/eslint-utils': 4.7.0(eslint@9.30.1)
+      '@eslint-community/regexpp': 4.12.1
       eslint: 9.30.1
       eslint-compat-utils: 0.5.1(eslint@9.30.1)
 
@@ -6387,7 +6390,7 @@ snapshots:
 
   eslint-plugin-promise@7.2.1(eslint@9.30.1):
     dependencies:
-      '@eslint-community/eslint-utils': 4.4.0(eslint@9.30.1)
+      '@eslint-community/eslint-utils': 4.7.0(eslint@9.30.1)
       eslint: 9.30.1
 
   eslint-plugin-svelte@3.10.1(eslint@9.30.1)(svelte@4.2.19)(ts-node@10.9.2(@types/node@22.7.5)(typescript@5.8.3)):
@@ -6424,7 +6427,7 @@ snapshots:
 
   eslint@9.30.1:
     dependencies:
-      '@eslint-community/eslint-utils': 4.4.0(eslint@9.30.1)
+      '@eslint-community/eslint-utils': 4.7.0(eslint@9.30.1)
       '@eslint-community/regexpp': 4.12.1
       '@eslint/config-array': 0.21.0
       '@eslint/config-helpers': 0.3.0
@@ -7568,7 +7571,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  native@https://codeload.github.com/hayase-app/native/tar.gz/c7307d5f3fe3cefbd71e139b3b6c30eedba9788e: {}
+  native@https://codeload.github.com/hayase-app/native/tar.gz/b77747898ca7e4991fac752559ea159c8c0f5083: {}
 
   natural-compare@1.4.0: {}
 
@@ -7885,6 +7888,8 @@ snapshots:
   picomatch@2.3.1: {}
 
   picomatch@4.0.2: {}
+
+  picomatch@4.0.3: {}
 
   pidtree@0.3.1: {}
 
@@ -8588,7 +8593,7 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.0
       '@jridgewell/trace-mapping': 0.3.25
       '@types/estree': 1.0.6
-      acorn: 8.12.1
+      acorn: 8.15.0
       aria-query: 5.3.2
       axobject-query: 4.1.0
       code-red: 1.0.4
@@ -8705,7 +8710,7 @@ snapshots:
     dependencies:
       bittorrent-peerid: 1.3.6
       matroska-metadata: 1.0.7
-      native: https://codeload.github.com/hayase-app/native/tar.gz/c7307d5f3fe3cefbd71e139b3b6c30eedba9788e
+      native: https://codeload.github.com/hayase-app/native/tar.gz/b77747898ca7e4991fac752559ea159c8c0f5083
       webtorrent: 2.8.4
     transitivePeerDependencies:
       - bare-buffer

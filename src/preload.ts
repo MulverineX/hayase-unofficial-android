@@ -4,6 +4,7 @@ import { Browser } from '@capacitor/browser'
 import { Device } from '@capacitor/device'
 // import { LocalNotifications } from '@capacitor/local-notifications'
 import { Share } from '@capacitor/share'
+import { ForegroundService } from '@capawesome-team/capacitor-android-foreground-service'
 import { proxy, wrap as _wrap, type Endpoint, type Remote } from 'abslink'
 import { IntentUri } from 'capacitor-intent-uri'
 import { type ChannelListenerCallback, NodeJS } from 'capacitor-nodejs'
@@ -369,8 +370,17 @@ if (!window.native) {
     cachedTorrents: async () => await (await torrent).cached(),
     isApp: true,
     spawnPlayer: async (url) => {
+      await ForegroundService.startForegroundService({
+        id: 1,
+        title: 'Hayase is running',
+        body: 'Hayase is currently running in the background',
+        smallIcon: 'ic_launcher_foreground',
+        silent: false,
+        notificationChannelId: 'default'
+      })
       const res = await IntentUri.openUri({ url: `${url.replace('http', 'intent')}#Intent;type=video/any;scheme=http;end;` })
       if (!res.completed) throw new Error(res.message)
+      await ForegroundService.stopForegroundService()
     },
     setDOH: async () => {
       const res = await IntentUri.openUri({ url: 'intent:#Intent;action=android.settings.SETTINGS;end;' })
