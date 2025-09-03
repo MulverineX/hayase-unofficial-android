@@ -243,6 +243,19 @@ public class MainActivity extends BridgeActivity {
           return super.shouldInterceptRequest(view, request);
         }
       }
+
+      @Override
+      public boolean onRenderProcessGone(WebView view, android.webkit.RenderProcessGoneDetail detail) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+          Log.e("WebView", "Render process gone for " + view.getUrl() + ". Did it crash? " + detail.didCrash());
+        }
+
+        if (view != null) {
+          view.reload();
+        }
+
+        return true; // Prevent the app from crashing
+      }
     });
 
     // make js window.open() work just like in a browser
@@ -295,11 +308,33 @@ public class MainActivity extends BridgeActivity {
         // Set the same WebChromeClient as the main WebView so window.close() works,
         // IMPORTANT
         popupWebView.setWebChromeClient(this);
-        popupWebView.setWebViewClient(new WebViewClient());
+        popupWebView.setWebViewClient(new WebViewClient() {
+          @Override
+          public boolean onRenderProcessGone(WebView view, android.webkit.RenderProcessGoneDetail detail) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+              Log.e("WebViewPopup", "Render process gone. Did it crash? " + detail.didCrash());
+            }
+
+            Dialog dialog = popupDialogs.get(view);
+            if (dialog != null) {
+              dialog.dismiss();
+            }
+
+            return true; // Prevent the app from crashing
+          }
+        });
 
         final Dialog dialog = new Dialog(MainActivity.this);
         dialog.setContentView(popupWebView);
         dialog.show();
+
+        android.view.Window window = dialog.getWindow();
+        if (window != null) {
+          android.util.DisplayMetrics metrics = getResources().getDisplayMetrics();
+          int width = (int) (metrics.widthPixels - 30);
+          int height = (int) (metrics.heightPixels - 30);
+          window.setLayout(width, height);
+        }
 
         popupDialogs.put(popupWebView, dialog);
 
