@@ -205,10 +205,10 @@ if (!window.native) {
     const listeners = new WeakMap<(...args: any[]) => void, PluginListenerHandle>()
 
     return {
-      on (event: string, listener: (data: unknown) => void) {
-      // @ts-expect-error idfk
+      async on (event: string, listener: (data: unknown) => void) {
+        // @ts-expect-error idfk
         const unwrapped: ChannelListenerCallback = (event) => listener(...event.args)
-        listeners.set(listener, channel.addListener(event, unwrapped))
+        listeners.set(listener, await channel.addListener(event, unwrapped))
       },
       off (event: string, listener: (...args: any[]) => void) {
         const unwrapped = listeners.get(listener)!
@@ -244,10 +244,7 @@ if (!window.native) {
   }
 
   class Store {
-    data = DEFAULTS
-    constructor () {
-      this.data = parseDataFile()
-    }
+    data = parseDataFile()
 
     get<K extends keyof Store['data']> (key: K): Store['data'][K] {
       return this.data[key]
@@ -370,18 +367,25 @@ if (!window.native) {
     cachedTorrents: async () => await (await torrent).cached(),
     isApp: true,
     spawnPlayer: async (url) => {
-      await ForegroundService.startForegroundService({
-        id: 1,
-        title: 'Hayase is running',
-        body: 'Hayase is currently running in the background',
-        smallIcon: 'ic_launcher_foreground',
-        silent: true,
-        serviceType: 2 as ServiceType,
-        notificationChannelId: 'default'
-      })
+      let notiPermission = await ForegroundService.checkPermissions()
+      if (notiPermission.display === 'prompt') notiPermission = await ForegroundService.requestPermissions()
+      if (notiPermission.display === 'granted') {
+        await ForegroundService.startForegroundService({
+          id: 1,
+          title: 'Hayase is running',
+          body: 'Hayase is currently running in the background',
+          smallIcon: 'ic_launcher_foreground',
+          silent: true,
+          serviceType: 2 as ServiceType,
+          notificationChannelId: 'default'
+        })
+      }
+
       const res = await IntentUri.openUri({ url: `${url.replace('http', 'intent')}#Intent;type=video/any;scheme=http;end;` })
+
+      if (notiPermission.display === 'granted') await ForegroundService.stopForegroundService()
+
       if (!res.completed) throw new Error(res.message)
-      await ForegroundService.stopForegroundService()
     },
     setDOH: async () => {
       const res = await IntentUri.openUri({ url: 'intent:#Intent;action=android.settings.SETTINGS;end;' })
