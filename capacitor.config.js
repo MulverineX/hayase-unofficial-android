@@ -1,16 +1,11 @@
 const mode = process.env.NODE_ENV?.trim() ?? 'development'
 
 module.exports = {
-  appId: 'watch.miru',
+  appId: 'app.hayase',
   appName: 'Hayase',
   webDir: 'build',
   loggingBehavior: 'none',
   android: {
-    buildOptions: {
-      keystorePath: './watch.miru',
-      keystorePassword: '',
-      keystoreAlias: 'watch.miru'
-    },
     webContentsDebuggingEnabled: mode === 'development'
   },
   plugins: {

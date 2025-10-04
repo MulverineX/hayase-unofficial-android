@@ -35,10 +35,10 @@ if (!window.native) {
   //         name: 'Something Else',
   //         platformSpecificPlaybackUris: [{
   //           type: PlatformType.ANDROID_TV,
-  //           uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end'
+  //           uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=app.hayase;end'
   //         }, {
   //           type: PlatformType.ANDROID_MOBILE,
-  //           uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end'
+  //           uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=app.hayase;end'
   //         }],
   //         posterImages: [{
   //           height: 720,
@@ -67,10 +67,10 @@ if (!window.native) {
   //         }],
   //         platformSpecificPlaybackUris: [{
   //           type: PlatformType.ANDROID_TV,
-  //           uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end'
+  //           uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=app.hayase;end'
   //         }, {
   //           type: PlatformType.ANDROID_MOBILE,
-  //           uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end'
+  //           uri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=app.hayase;end'
   //         }],
   //         lastEngagementTimeMillis: 1752717555387,
   //         durationMillis: 1500000,
@@ -90,7 +90,7 @@ if (!window.native) {
   //             type: 'tv_season',
   //             watchNextType: WatchNextType.NEW,
   //             entityId: 'b',
-  //             infoPageUri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end',
+  //             infoPageUri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=app.hayase;end',
   //             name: 'Same stuff',
   //             posterImages: [{
   //               height: 720,
@@ -108,7 +108,7 @@ if (!window.native) {
   //             type: 'tv_show',
   //             entityId: 'c',
   //             watchNextType: WatchNextType.NEW,
-  //             infoPageUri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=watch.miru;end',
+  //             infoPageUri: 'intent:#Intent;action=android.intent.action.VIEW;data=hayase://playback/uniqueId1;package=app.hayase;end',
   //             name: 'Same but show',
   //             posterImages: [{
   //               height: 720,

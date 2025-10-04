@@ -1,5 +1,5 @@
 // https://github.com/ghenry22/capacitor-plugins/blob/main/filesystem/
-package watch.miru;
+package app.hayase;
 
 import android.content.Context;
 import android.net.Uri;
@@ -7,7 +7,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.util.Base64;
 import androidx.core.os.EnvironmentCompat;
-import watch.miru.exceptions.DirectoryNotFoundException;
+import app.hayase.exceptions.DirectoryNotFoundException;
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
@@ -50,7 +50,6 @@ public class Filesystem {
         }
         return files;
     }
-
 
     @SuppressWarnings("deprecation")
     public File getDirectory(String directory) {
@@ -115,7 +114,7 @@ public class Filesystem {
             }
         }
 
-        //Remove paths which may not be external SDCard, like OTG
+        // Remove paths which may not be external SDCard, like OTG
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             for (int i = 0; i < results.size(); i++) {
                 if (!results.get(i).toLowerCase().matches(".*[0-9a-f]{4}[-][0-9a-f]{4}.*")) {
@@ -131,7 +130,8 @@ public class Filesystem {
         }
 
         String[] storageDirectories = new String[results.size()];
-        for (int i = 0; i < results.size(); ++i) storageDirectories[i] = results.get(i);
+        for (int i = 0; i < results.size(); ++i)
+            storageDirectories[i] = results.get(i);
 
         return storageDirectories;
     }

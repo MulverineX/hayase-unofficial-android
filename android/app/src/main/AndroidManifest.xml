@@ -42,12 +42,12 @@
         </activity>
 
         <service
-            android:name="watch.miru.MediaNotificationService"
+            android:name="app.hayase.MediaNotificationService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
-                <action android:name="watch.miru.action.PIP" />
+                <action android:name="app.hayase.action.PIP" />
             </intent-filter>
         </service>
 
@@ -87,6 +87,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />

@@ -7,7 +7,7 @@ USER root
 COPY ../../nodejs-mobile /opt/libnode
 ENV LIBNODE_PATH=/opt/libnode
 
-# Install nodejs 18 (same version as nodejs-mobile)
+# Install nodejs 24.5.0 (same version as nodejs-mobile)
 ARG NODE_MAJOR=24
 
 RUN apt-get update

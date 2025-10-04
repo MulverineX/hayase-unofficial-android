@@ -1,4 +1,4 @@
-package watch.miru;
+package app.hayase;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,7 +13,8 @@ import com.android.volley.toolbox.HttpHeaderParser;
 public class BitmapNetworkRequest extends Request<Bitmap> {
   private final Response.Listener<Bitmap> listener;
 
-  public BitmapNetworkRequest(int method, String url, Response.Listener<Bitmap> listener, @Nullable Response.ErrorListener errorListener) {
+  public BitmapNetworkRequest(int method, String url, Response.Listener<Bitmap> listener,
+      @Nullable Response.ErrorListener errorListener) {
     super(method, url, errorListener);
     this.listener = listener;
   }

@@ -1,4 +1,4 @@
-package watch.miru;
+package app.hayase;
 
 import android.Manifest;
 import android.app.Notification;
@@ -40,7 +40,7 @@ public class MediaNotificationService extends Service {
   public int onStartCommand(Intent intent, int flags, int startId) {
     if (intent == null)
       return START_STICKY;
-    if (Objects.equals(intent.getAction(), "watch.miru.action.PIP")) {
+    if (Objects.equals(intent.getAction(), "app.hayase.action.PIP")) {
       if (controller != null) {
         controller.sendCommand("enterpictureinpicture", null, null);
       }
@@ -97,7 +97,7 @@ public class MediaNotificationService extends Service {
     MediaMetadataCompat metadata = controller.getMetadata();
 
     Intent pipIntent = new Intent(this, MediaNotificationService.class);
-    pipIntent.setAction("watch.miru.action.PIP");
+    pipIntent.setAction("app.hayase.action.PIP");
     PendingIntent pipPendingIntent = PendingIntent.getService(this, 1, pipIntent, PendingIntent.FLAG_IMMUTABLE);
 
     Intent openIntent = new Intent(this, MainActivity.class);

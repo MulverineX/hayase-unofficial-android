@@ -1,12 +1,12 @@
 // https://github.com/ghenry22/capacitor-plugins/blob/main/filesystem/
-package watch.miru;
+package app.hayase;
 
 import android.Manifest;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import watch.miru.exceptions.DirectoryNotFoundException;
+import app.hayase.exceptions.DirectoryNotFoundException;
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Logger;
@@ -26,15 +26,10 @@ import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import org.json.JSONException;
 
-@CapacitorPlugin(
-    name = "Filesystem",
-    permissions = {
-        @Permission(
-            strings = { Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE },
-            alias = "publicStorage"
-        )
-    }
-)
+@CapacitorPlugin(name = "Filesystem", permissions = {
+        @Permission(strings = { Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE }, alias = "publicStorage")
+})
 public class FilesystemPlugin extends Plugin {
 
     static final String PUBLIC_STORAGE = "publicStorage";
@@ -53,7 +48,6 @@ public class FilesystemPlugin extends Plugin {
         ret.put("available", implementation.isPortableStorageAvailable());
         call.resolve(ret);
     }
-
 
     @PluginMethod
     public void readdir(PluginCall call) {
@@ -78,7 +72,8 @@ public class FilesystemPlugin extends Plugin {
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             try {
-                                BasicFileAttributes attr = Files.readAttributes(fileObject.toPath(), BasicFileAttributes.class);
+                                BasicFileAttributes attr = Files.readAttributes(fileObject.toPath(),
+                                        BasicFileAttributes.class);
 
                                 // use whichever is the oldest between creationTime and lastAccessTime
                                 if (attr.creationTime().toMillis() < attr.lastAccessTime().toMillis()) {
@@ -86,7 +81,8 @@ public class FilesystemPlugin extends Plugin {
                                 } else {
                                     data.put("ctime", attr.lastAccessTime().toMillis());
                                 }
-                            } catch (Exception ex) {}
+                            } catch (Exception ex) {
+                            }
                         } else {
                             data.put("ctime", null);
                         }
@@ -136,7 +132,8 @@ public class FilesystemPlugin extends Plugin {
                     } else {
                         data.put("ctime", attr.lastAccessTime().toMillis());
                     }
-                } catch (Exception ex) {}
+                } catch (Exception ex) {
+                }
             } else {
                 data.put("ctime", null);
             }
@@ -148,11 +145,12 @@ public class FilesystemPlugin extends Plugin {
     @PluginMethod
     public void checkPermissions(PluginCall call) {
         JSObject permissionsResultJSON = new JSObject();
-        
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             // For Android 11+, check MANAGE_EXTERNAL_STORAGE permission
             permissionsResultJSON.put(PUBLIC_STORAGE, Environment.isExternalStorageManager() ? "granted" : "denied");
-            permissionsResultJSON.put("manageExternalStorage", Environment.isExternalStorageManager() ? "granted" : "denied");
+            permissionsResultJSON.put("manageExternalStorage",
+                    Environment.isExternalStorageManager() ? "granted" : "denied");
         } else {
             // For older versions, check traditional storage permissions
             if (isStoragePermissionGranted()) {
@@ -196,15 +194,19 @@ public class FilesystemPlugin extends Plugin {
 
     /**
      * Checks the the given permission is granted or not
-     * @return Returns true if the app is running on Android 30 or newer or if the permission is already granted
-     * or false if it is denied.
+     * 
+     * @return Returns true if the app is running on Android 30 or newer or if the
+     *         permission is already granted
+     *         or false if it is denied.
      */
     private boolean isStoragePermissionGranted() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || getPermissionState(PUBLIC_STORAGE) == PermissionState.GRANTED;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                || getPermissionState(PUBLIC_STORAGE) == PermissionState.GRANTED;
     }
 
     /**
      * Reads the directory parameter from the plugin call
+     * 
      * @param call the plugin call
      */
     private String getDirectoryParameter(PluginCall call) {
@@ -212,7 +214,9 @@ public class FilesystemPlugin extends Plugin {
     }
 
     /**
-     * True if the given directory string is a public storage directory, which is accessible by the user or other apps.
+     * True if the given directory string is a public storage directory, which is
+     * accessible by the user or other apps.
+     * 
      * @param directory the directory string.
      */
     private boolean isPublicDirectory(String directory) {

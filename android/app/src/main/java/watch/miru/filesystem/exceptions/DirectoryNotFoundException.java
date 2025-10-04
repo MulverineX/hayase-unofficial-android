@@ -1,4 +1,4 @@
-package watch.miru.exceptions;
+package app.hayase.exceptions;
 
 public class DirectoryNotFoundException extends Exception {
 

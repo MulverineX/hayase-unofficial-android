@@ -1,4 +1,4 @@
-package watch.miru;
+package app.hayase;
 
 import android.net.Uri;
 
@@ -68,7 +68,7 @@ public class EngagePlugin extends Plugin {
 
   @PluginMethod
   public void isServiceAvailable(PluginCall call) {
-    client.isServiceAvailable().addOnCompleteListener( task -> {
+    client.isServiceAvailable().addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         call.successCallback(new PluginResult(new JSObject().put("result", task.getResult())));
       } else {
@@ -83,7 +83,8 @@ public class EngagePlugin extends Plugin {
 
     try {
       ContinuationClusterSchema cluster = mapper.readValue(call.getData().toString(), ContinuationClusterSchema.class);
-      client.publishContinuationCluster(new PublishContinuationClusterRequest.Builder().setContinuationCluster(cluster.asEngage()).build());
+      client.publishContinuationCluster(
+          new PublishContinuationClusterRequest.Builder().setContinuationCluster(cluster.asEngage()).build());
       call.successCallback(new PluginResult());
     } catch (JsonProcessingException e) {
       call.reject("Failed processing JSON", e);
@@ -95,8 +96,11 @@ public class EngagePlugin extends Plugin {
     ObjectMapper mapper = new ObjectMapper();
 
     try {
-      EngageAccount account = mapper.readValue(call.getData().getJSObject("accountProfile").toString(), EngageAccount.class);
-      List<RecommendationClusterSchema> cluster = mapper.readValue(call.getData().getJSONArray("clusters").toString(), new TypeReference<>(){});
+      EngageAccount account = mapper.readValue(call.getData().getJSObject("accountProfile").toString(),
+          EngageAccount.class);
+      List<RecommendationClusterSchema> cluster = mapper.readValue(call.getData().getJSONArray("clusters").toString(),
+          new TypeReference<>() {
+          });
       PublishRecommendationClustersRequest.Builder builder = new PublishRecommendationClustersRequest.Builder()
           .setAccountProfile(account.asEngage());
 
@@ -117,7 +121,8 @@ public class EngagePlugin extends Plugin {
 
     try {
       FeaturedClusterSchema cluster = mapper.readValue(call.getData().toString(), FeaturedClusterSchema.class);
-      client.publishFeaturedCluster(new PublishFeaturedClusterRequest.Builder().setFeaturedCluster(cluster.asEngage()).build());
+      client.publishFeaturedCluster(
+          new PublishFeaturedClusterRequest.Builder().setFeaturedCluster(cluster.asEngage()).build());
       call.successCallback(new PluginResult());
     } catch (JsonProcessingException e) {
       call.reject("Failed processing JSON", e);
@@ -171,7 +176,8 @@ public class EngagePlugin extends Plugin {
           .setSubtitle(subtitle)
           .setActionText(actionText);
 
-      if (actionUri != null) builder.setActionUri(Uri.parse(actionUri));
+      if (actionUri != null)
+        builder.setActionUri(Uri.parse(actionUri));
 
       for (EngageEntry entry : entries) {
         builder.addEntity(entry.asEngage());
@@ -194,6 +200,7 @@ public class EngagePlugin extends Plugin {
       return builder.build();
     }
   }
+
   private static class EngageAccount {
     public String accoundId;
     public String profileId;
@@ -201,23 +208,25 @@ public class EngagePlugin extends Plugin {
 
     protected AccountProfile asEngage() {
       return new AccountProfile.Builder()
-        .setAccountId(accoundId)
-        .setProfileId(profileId)
-        .setLocale(locale)
-        .build();
+          .setAccountId(accoundId)
+          .setProfileId(profileId)
+          .setLocale(locale)
+          .build();
     }
   }
+
   private static class EngageUri {
     public String uri;
     public int type;
 
     protected PlatformSpecificUri asEngage() {
       return new PlatformSpecificUri.Builder()
-        .setActionUri(Uri.parse(uri))
-        .setPlatformType(type)
-        .build();
+          .setActionUri(Uri.parse(uri))
+          .setPlatformType(type)
+          .build();
     }
   }
+
   private static class EngageImage {
     public String uri;
     public int width;
@@ -225,21 +234,22 @@ public class EngagePlugin extends Plugin {
 
     protected Image asEngage() {
       return new Image.Builder()
-        .setImageUri(Uri.parse(uri))
-        .setImageWidthInPixel(width)
-        .setImageHeightInPixel(height)
-        .build();
+          .setImageUri(Uri.parse(uri))
+          .setImageWidthInPixel(width)
+          .setImageHeightInPixel(height)
+          .build();
     }
   }
+
   private static class EngageAvailabilityWindow {
     long startTimestampMillis;
     long endTimestampMillis;
 
     protected DisplayTimeWindow asEngage() {
       return new DisplayTimeWindow.Builder()
-        .setStartTimestampMillis(startTimestampMillis)
-        .setEndTimestampMillis(endTimestampMillis)
-        .build();
+          .setStartTimestampMillis(startTimestampMillis)
+          .setEndTimestampMillis(endTimestampMillis)
+          .build();
     }
   }
 
@@ -249,16 +259,13 @@ public class EngagePlugin extends Plugin {
 
     protected RatingSystem asEngage() {
       return new RatingSystem.Builder()
-        .setRating(rating)
-        .setAgencyName(agencyName)
-        .build();
+          .setRating(rating)
+          .setAgencyName(agencyName)
+          .build();
     }
   }
-  @JsonTypeInfo(
-      use = JsonTypeInfo.Id.NAME,
-      include = JsonTypeInfo.As.PROPERTY,
-      property = "type"
-  )
+
+  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
   @JsonSubTypes({
       @JsonSubTypes.Type(value = EngageTvEpisodeEntry.class, name = "tv_episode"),
       @JsonSubTypes.Type(value = EngageTvSeasonEntry.class, name = "tv_season"),
@@ -268,6 +275,7 @@ public class EngagePlugin extends Plugin {
   private abstract static class EngageEntry {
     protected abstract Entity asEngage();
   }
+
   private static class EngageTvEpisodeEntry extends EngageEntry {
     public List<EngageAvailabilityWindow> availabilityTimeWindows;
     public List<EngageContentRating> contentRatings;
@@ -280,7 +288,7 @@ public class EngagePlugin extends Plugin {
     public List<EngageUri> platformSpecificPlaybackUris; // required
     public List<EngageImage> posterImages; // required
     public long lastEngagementTimeMillis;
-    public int durationMillis; //required
+    public int durationMillis; // required
     public int lastPlayBackPositionTimeMillis;
     public int episodeNumber;
     public String seasonNumber;
@@ -291,29 +299,33 @@ public class EngagePlugin extends Plugin {
 
     protected TvEpisodeEntity asEngage() {
       return new TvEpisodeEntity.Builder()
-        .addAllAvailabilityTimeWindows(availabilityTimeWindows == null ? Collections.<DisplayTimeWindow>emptyList() : EngagePlugin.<EngageAvailabilityWindow, DisplayTimeWindow>mapToEngage(availabilityTimeWindows))
-        .setInfoPageUri(infoPageUri == null ? null : Uri.parse(infoPageUri))
-        .setWatchNextType(watchNextType)
-        .setEntityId(entityId)
-        .setDownloadedOnDevice(downloadedOnDevice)
-        .setIsNextEpisodeAvailable(isNextEpisodeAvailable)
-        .setName(name)
-        .addPlatformSpecificPlaybackUris(EngagePlugin.<EngageUri, PlatformSpecificUri>mapToEngage(platformSpecificPlaybackUris))
-        .addPosterImages(EngagePlugin.<EngageImage, Image>mapToEngage(posterImages))
-        .setLastEngagementTimeMillis(lastEngagementTimeMillis)
-        .setDurationMillis(durationMillis)
-        .setLastPlayBackPositionTimeMillis(lastPlayBackPositionTimeMillis)
-        .setEpisodeNumber(episodeNumber)
-        .setSeasonNumber(seasonNumber)
-        .setShowTitle(showTitle)
-        .setSeasonTitle(seasonTitle)
-        .setAirDateEpochMillis(airDateEpochMillis)
-        .setAvailability(ContentAvailability.AVAILABILITY_AVAILABLE)
-        .addGenres(genres)
-        .addContentRatings(contentRatings == null ? Collections.<RatingSystem>emptyList() : EngagePlugin.<EngageContentRating, RatingSystem>mapToEngage(contentRatings))
-        .build();
+          .addAllAvailabilityTimeWindows(availabilityTimeWindows == null ? Collections.<DisplayTimeWindow>emptyList()
+              : EngagePlugin.<EngageAvailabilityWindow, DisplayTimeWindow>mapToEngage(availabilityTimeWindows))
+          .setInfoPageUri(infoPageUri == null ? null : Uri.parse(infoPageUri))
+          .setWatchNextType(watchNextType)
+          .setEntityId(entityId)
+          .setDownloadedOnDevice(downloadedOnDevice)
+          .setIsNextEpisodeAvailable(isNextEpisodeAvailable)
+          .setName(name)
+          .addPlatformSpecificPlaybackUris(
+              EngagePlugin.<EngageUri, PlatformSpecificUri>mapToEngage(platformSpecificPlaybackUris))
+          .addPosterImages(EngagePlugin.<EngageImage, Image>mapToEngage(posterImages))
+          .setLastEngagementTimeMillis(lastEngagementTimeMillis)
+          .setDurationMillis(durationMillis)
+          .setLastPlayBackPositionTimeMillis(lastPlayBackPositionTimeMillis)
+          .setEpisodeNumber(episodeNumber)
+          .setSeasonNumber(seasonNumber)
+          .setShowTitle(showTitle)
+          .setSeasonTitle(seasonTitle)
+          .setAirDateEpochMillis(airDateEpochMillis)
+          .setAvailability(ContentAvailability.AVAILABILITY_AVAILABLE)
+          .addGenres(genres)
+          .addContentRatings(contentRatings == null ? Collections.<RatingSystem>emptyList()
+              : EngagePlugin.<EngageContentRating, RatingSystem>mapToEngage(contentRatings))
+          .build();
     }
   }
+
   private static class EngageTvSeasonEntry extends EngageEntry {
     public List<EngageAvailabilityWindow> availabilityTimeWindows;
     public List<EngageContentRating> contentRatings;
@@ -333,25 +345,28 @@ public class EngagePlugin extends Plugin {
 
     protected TvSeasonEntity asEngage() {
       return new TvSeasonEntity.Builder()
-        .addAllAvailabilityTimeWindows(availabilityTimeWindows == null ? Collections.<DisplayTimeWindow>emptyList() : EngagePlugin.<EngageAvailabilityWindow, DisplayTimeWindow>mapToEngage(availabilityTimeWindows))
-        .setInfoPageUri(infoPageUri == null ? null : Uri.parse(infoPageUri))
-        .setPlayBackUri(playBackUri == null ? null : Uri.parse(playBackUri))
-        .setWatchNextType(watchNextType)
-        .setEntityId(entityId)
-        .setName(name)
-        .addPosterImages(EngagePlugin.<EngageImage, Image>mapToEngage(posterImages))
-        .setLastEngagementTimeMillis(lastEngagementTimeMillis)
-        .setLastPlayBackPositionTimeMillis(lastPlayBackPositionTimeMillis)
-        .setFirstEpisodeAirDateEpochMillis(firstEpisodeAirDateEpochMillis)
-        .setLatestEpisodeAirDateEpochMillis(latestEpisodeAirDateEpochMillis)
-        .setEpisodeCount(episodeCount)
-        .setSeasonNumber(seasonNumber)
-        .setAvailability(ContentAvailability.AVAILABILITY_AVAILABLE)
-        .addGenres(genres)
-        .addContentRatings(contentRatings == null ? Collections.<RatingSystem>emptyList() : EngagePlugin.<EngageContentRating, RatingSystem>mapToEngage(contentRatings))
-        .build();
+          .addAllAvailabilityTimeWindows(availabilityTimeWindows == null ? Collections.<DisplayTimeWindow>emptyList()
+              : EngagePlugin.<EngageAvailabilityWindow, DisplayTimeWindow>mapToEngage(availabilityTimeWindows))
+          .setInfoPageUri(infoPageUri == null ? null : Uri.parse(infoPageUri))
+          .setPlayBackUri(playBackUri == null ? null : Uri.parse(playBackUri))
+          .setWatchNextType(watchNextType)
+          .setEntityId(entityId)
+          .setName(name)
+          .addPosterImages(EngagePlugin.<EngageImage, Image>mapToEngage(posterImages))
+          .setLastEngagementTimeMillis(lastEngagementTimeMillis)
+          .setLastPlayBackPositionTimeMillis(lastPlayBackPositionTimeMillis)
+          .setFirstEpisodeAirDateEpochMillis(firstEpisodeAirDateEpochMillis)
+          .setLatestEpisodeAirDateEpochMillis(latestEpisodeAirDateEpochMillis)
+          .setEpisodeCount(episodeCount)
+          .setSeasonNumber(seasonNumber)
+          .setAvailability(ContentAvailability.AVAILABILITY_AVAILABLE)
+          .addGenres(genres)
+          .addContentRatings(contentRatings == null ? Collections.<RatingSystem>emptyList()
+              : EngagePlugin.<EngageContentRating, RatingSystem>mapToEngage(contentRatings))
+          .build();
     }
   }
+
   private static class EngageTvShowEntry extends EngageEntry {
     public List<EngageAvailabilityWindow> availabilityTimeWindows;
     public List<EngageContentRating> contentRatings;
@@ -370,24 +385,27 @@ public class EngagePlugin extends Plugin {
 
     protected TvShowEntity asEngage() {
       return new TvShowEntity.Builder()
-        .addAllAvailabilityTimeWindows(availabilityTimeWindows == null ? Collections.<DisplayTimeWindow>emptyList() : EngagePlugin.<EngageAvailabilityWindow, DisplayTimeWindow>mapToEngage(availabilityTimeWindows))
-        .setInfoPageUri(infoPageUri == null ? null : Uri.parse(infoPageUri))
-        .setPlayBackUri(playBackUri == null ? null : Uri.parse(playBackUri))
-        .setWatchNextType(watchNextType)
-        .setEntityId(entityId)
-        .setName(name)
-        .addPosterImages(EngagePlugin.<EngageImage, Image>mapToEngage(posterImages))
-        .setLastEngagementTimeMillis(lastEngagementTimeMillis)
-        .setLastPlayBackPositionTimeMillis(lastPlayBackPositionTimeMillis)
-        .setFirstEpisodeAirDateEpochMillis(firstEpisodeAirDateEpochMillis)
-        .setLatestEpisodeAirDateEpochMillis(latestEpisodeAirDateEpochMillis)
-        .setAvailability(ContentAvailability.AVAILABILITY_AVAILABLE)
-        .setSeasonCount(seasonCount)
-        .addGenres(genres)
-        .addContentRatings(contentRatings == null ? Collections.<RatingSystem>emptyList() : EngagePlugin.<EngageContentRating, RatingSystem>mapToEngage(contentRatings))
-        .build();
+          .addAllAvailabilityTimeWindows(availabilityTimeWindows == null ? Collections.<DisplayTimeWindow>emptyList()
+              : EngagePlugin.<EngageAvailabilityWindow, DisplayTimeWindow>mapToEngage(availabilityTimeWindows))
+          .setInfoPageUri(infoPageUri == null ? null : Uri.parse(infoPageUri))
+          .setPlayBackUri(playBackUri == null ? null : Uri.parse(playBackUri))
+          .setWatchNextType(watchNextType)
+          .setEntityId(entityId)
+          .setName(name)
+          .addPosterImages(EngagePlugin.<EngageImage, Image>mapToEngage(posterImages))
+          .setLastEngagementTimeMillis(lastEngagementTimeMillis)
+          .setLastPlayBackPositionTimeMillis(lastPlayBackPositionTimeMillis)
+          .setFirstEpisodeAirDateEpochMillis(firstEpisodeAirDateEpochMillis)
+          .setLatestEpisodeAirDateEpochMillis(latestEpisodeAirDateEpochMillis)
+          .setAvailability(ContentAvailability.AVAILABILITY_AVAILABLE)
+          .setSeasonCount(seasonCount)
+          .addGenres(genres)
+          .addContentRatings(contentRatings == null ? Collections.<RatingSystem>emptyList()
+              : EngagePlugin.<EngageContentRating, RatingSystem>mapToEngage(contentRatings))
+          .build();
     }
   }
+
   private static class EngageMovieEntry extends EngageEntry {
     public List<EngageAvailabilityWindow> availabilityTimeWindows;
     public List<EngageContentRating> contentRatings;
@@ -407,23 +425,26 @@ public class EngagePlugin extends Plugin {
 
     protected MovieEntity asEngage() {
       return new MovieEntity.Builder()
-        .addAllAvailabilityTimeWindows(availabilityTimeWindows == null ? Collections.<DisplayTimeWindow>emptyList() : EngagePlugin.<EngageAvailabilityWindow, DisplayTimeWindow>mapToEngage(availabilityTimeWindows))
-        .addContentRatings(contentRatings == null ? Collections.<RatingSystem>emptyList() : EngagePlugin.<EngageContentRating, RatingSystem>mapToEngage(contentRatings))
-        .addGenres(genres)
-        .addPlatformSpecificPlaybackUris(EngagePlugin.<EngageUri, PlatformSpecificUri>mapToEngage(platformSpecificPlaybackUris))
-        .addPosterImages(EngagePlugin.<EngageImage, Image>mapToEngage(posterImages))
-        .setDescription(description)
-        .setAvailability(ContentAvailability.AVAILABILITY_AVAILABLE)
-        .setDownloadedOnDevice(downloadedOnDevice)
-        .setDurationMillis(durationMillis)
-        .setEntityId(entityId)
-        .setInfoPageUri(infoPageUri == null ? null : Uri.parse(infoPageUri))
-        .setLastEngagementTimeMillis(lastEngagementTimeMillis)
-        .setLastPlayBackPositionTimeMillis(LastPlayBackPositionTimeMillis)
-        .setName(name)
-        .setReleaseDateEpochMillis(releaseDateEpochMillis)
-        .setWatchNextType(watchNextType)
-        .build();
+          .addAllAvailabilityTimeWindows(availabilityTimeWindows == null ? Collections.<DisplayTimeWindow>emptyList()
+              : EngagePlugin.<EngageAvailabilityWindow, DisplayTimeWindow>mapToEngage(availabilityTimeWindows))
+          .addContentRatings(contentRatings == null ? Collections.<RatingSystem>emptyList()
+              : EngagePlugin.<EngageContentRating, RatingSystem>mapToEngage(contentRatings))
+          .addGenres(genres)
+          .addPlatformSpecificPlaybackUris(
+              EngagePlugin.<EngageUri, PlatformSpecificUri>mapToEngage(platformSpecificPlaybackUris))
+          .addPosterImages(EngagePlugin.<EngageImage, Image>mapToEngage(posterImages))
+          .setDescription(description)
+          .setAvailability(ContentAvailability.AVAILABILITY_AVAILABLE)
+          .setDownloadedOnDevice(downloadedOnDevice)
+          .setDurationMillis(durationMillis)
+          .setEntityId(entityId)
+          .setInfoPageUri(infoPageUri == null ? null : Uri.parse(infoPageUri))
+          .setLastEngagementTimeMillis(lastEngagementTimeMillis)
+          .setLastPlayBackPositionTimeMillis(LastPlayBackPositionTimeMillis)
+          .setName(name)
+          .setReleaseDateEpochMillis(releaseDateEpochMillis)
+          .setWatchNextType(watchNextType)
+          .build();
     }
   }
 }

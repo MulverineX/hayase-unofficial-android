@@ -1,4 +1,4 @@
-package watch.miru;
+package app.hayase;
 
 import static android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ART_URI;
 import static android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION;
@@ -42,7 +42,7 @@ public class MediaNotificationPlugin extends Plugin {
 
   private MediaSessionCompat getSession() {
     if (current == null) {
-      Log.i("watch.miru", "MediaSession created");
+      Log.i("app.hayase", "MediaSession created");
       current = new MediaSessionCompat(this.getContext(), "hayase-player");
       current.setCallback(new MediaCallback());
       current.setActive(true);
@@ -67,7 +67,7 @@ public class MediaNotificationPlugin extends Plugin {
   @PluginMethod
   public void setMediaSession(PluginCall call) {
     MediaSessionCompat session = getSession();
-    Log.i("watch.miru", "Metadata Updated");
+    Log.i("app.hayase", "Metadata Updated");
     String url = call.getString("image");
     if (url != null && !Objects.equals(url, lastUrl)) {
       lastUrl = url;
@@ -105,7 +105,7 @@ public class MediaNotificationPlugin extends Plugin {
     int state = call.getInt("state", 0);
     long position = (long) Math.floor(call.getDouble("position", 0d) * 1000);
     float rate = call.getFloat("playbackRate", 0f);
-    Log.i("watch.miru", "Playstate updated " + state + " " + position + " " + rate);
+    Log.i("app.hayase", "Playstate updated " + state + " " + position + " " + rate);
 
     session.setPlaybackState(new PlaybackStateCompat.Builder()
         .setState(state, position, rate)
@@ -130,13 +130,13 @@ public class MediaNotificationPlugin extends Plugin {
 
     @Override
     public void onPlay() {
-      Log.i("watch.miru", "Play event sent");
+      Log.i("app.hayase", "Play event sent");
       notifyListeners("play", new JSObject());
     }
 
     @Override
     public void onPause() {
-      Log.i("watch.miru", "Pause event sent");
+      Log.i("app.hayase", "Pause event sent");
       notifyListeners("pause", new JSObject());
     }
 
