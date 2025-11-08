@@ -83,7 +83,7 @@ public class MainActivity extends BridgeActivity {
 
     final WebView webView = getBridge().getWebView();
 
-    AppUpdater.downloadAndInstallApk(this, "https://api.github.com/repos/hayase-app/ui/releases");
+    AppUpdater.downloadAndInstallApk(this, "https://api.github.com/repos/hayase-app/docs/releases");
 
     WebSettings settings = webView.getSettings();
     settings.setSupportMultipleWindows(true);

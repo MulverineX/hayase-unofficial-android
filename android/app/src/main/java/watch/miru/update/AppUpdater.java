@@ -263,7 +263,7 @@ public final class AppUpdater {
    * Extracts version string from APK URL using the LAST occurrence.
    * Handles formats like:
    * -
-   * https://github.com/hayase-app/ui/releases/download/v6.4.32/android-6.4.10.apk
+   * https://github.com/owner/repo/releases/download/v6.4.32/android-6.4.10.apk
    * - Returns "6.4.10" (from the filename, not the tag)
    */
   @Nullable
