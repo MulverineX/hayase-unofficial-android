@@ -33,7 +33,9 @@ const config = [
     },
     externals: {
       'utp-native': 'require("utp-native")',
-      bridge: 'require("bridge")'
+      bridge: 'require("bridge")',
+      '@thaunknown/yencode': 'require("@thaunknown/yencode")',
+      '@thaunknown/yencode/build/Release/yencode.node': 'require("@thaunknown/yencode/build/Release/yencode.node")'
     },
     resolve: {
       aliasFields: [],

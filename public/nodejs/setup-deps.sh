@@ -42,11 +42,6 @@ for ((i=0;i<${#toolchain_target_archs[@]};i++)); do
   export npm_config_format=make-android
   export npm_gyp_defines="target_arch=$node_target_arch v8_target_arch=$node_target_arch android_target_arch=$node_target_arch host_os=linux OS=android"
   
-  # Export N-API symbols to fix dlopen errors with native modules
-  export LDFLAGS="-Wl,--export-dynamic"
-  export CFLAGS="-fvisibility=default"
-  export CXXFLAGS="-fvisibility=default"
-  
   # --from-from-source is used by node-pre-gyp
   echo "Rebuilding for $node_target_arch"
   npm rebuild --build-from-source

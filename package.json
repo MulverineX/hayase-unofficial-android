@@ -3,18 +3,18 @@
   "private": true,
   "packageManager": "pnpm@9.15.5",
   "devDependencies": {
-    "@capacitor/android": "^7.4.3",
-    "@capacitor/app": "^7.0.2",
+    "@capacitor/android": "^7.4.4",
+    "@capacitor/app": "^7.1.0",
     "@capacitor/assets": "github:thaunknown/capacitor-assets",
     "@capacitor/browser": "^7.0.2",
-    "@capacitor/cli": "^7.4.3",
-    "@capacitor/core": "^7.4.3",
+    "@capacitor/cli": "^7.4.4",
+    "@capacitor/core": "^7.4.4",
     "@capacitor/device": "^7.0.2",
-    "@capacitor/local-notifications": "^7.0.2",
+    "@capacitor/local-notifications": "^7.0.3",
     "@capacitor/share": "7.0.2",
     "@capawesome-team/capacitor-android-foreground-service": "^7.0.1",
     "@types/webpack": "^5.28.5",
-    "abslink": "^1.1.2",
+    "abslink": "^1.1.6",
     "capacitor-intent-uri": "^0.0.2",
     "capacitor-nodejs": "git+https://github.com/hayase-app/capacitor-nodejs.git",
     "concurrently": "^9.2.1",
@@ -31,9 +31,9 @@
     "torrent-client": "github:hayase-app/torrent-client",
     "ts-loader": "^9.5.4",
     "ts-node": "^10.9.2",
-    "webpack": "^5.95.0",
+    "webpack": "^5.102.1",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.1.0",
+    "webpack-dev-server": "^5.2.2",
     "webpack-license-plugin": "^4.5.1"
   },
   "scripts": {
@@ -48,10 +48,10 @@
     "dev:android-port": "run-s dev:android dev:adb-port",
     "dev:start": "run-p dev:webpack dev:android-port",
     "dev:webpack": "webpack serve",
-    "dev:logcat": "adb logcat -s \"NodeJS-Engine,nodejs,app.hayase,AppUpdater\"",
-    "dev:logcat-enable": "adb shell setprop persist.log.tag E",
+    "dev:logcat": "adb logcat -s \"NodeJS-Engine,nodejs,app.hayase,AppUpdater,Capacitor\"",
+    "dev:logcat-enable": "adb shell setprop persist.log.tag VERBOSE",
     "dev:logcat-disable": "adb shell setprop persist.log.tag S",
     "test:e2e": "cross-env NODE_ENV=production run-s build:web dev:android"
   },
-  "version": "6.4.13"
+  "version": "6.4.19"
 }

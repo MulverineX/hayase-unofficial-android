@@ -30,13 +30,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Utility class that downloads an APK from GitHub releases and launches the
- * system installer.
- * Caller only needs to invoke {@link #downloadAndInstallApk(Context, String)}
- * with a GitHub API releases URL (e.g.,
- * https://api.github.com/repos/owner/repo/releases).
- */
 public final class AppUpdater {
 
   private static final String TAG = "app.hayase";
@@ -46,20 +39,20 @@ public final class AppUpdater {
     // Utility class
   }
 
-  public static void downloadAndInstallApk(@NonNull Context context, @NonNull String githubApiUrl) {
+  public static void downloadAndInstallApk(@NonNull Context context, @NonNull String apiurl) {
     Context appContext = context.getApplicationContext();
 
     // Run download in background thread
     new Thread(() -> {
       try {
-        if (TextUtils.isEmpty(githubApiUrl)) {
+        if (TextUtils.isEmpty(apiurl)) {
           Log.w(TAG, "downloadAndInstallApk: URL is empty");
           return;
         }
 
         // Fetch latest release from GitHub API
-        Log.i(TAG, "Fetching releases from: " + githubApiUrl);
-        ReleaseInfo releaseInfo = fetchLatestRelease(githubApiUrl);
+        Log.i(TAG, "Fetching releases from: " + apiurl);
+        ReleaseInfo releaseInfo = fetchLatestRelease(apiurl);
         if (releaseInfo == null) {
           Log.w(TAG, "Could not fetch release information from GitHub API");
           return;
@@ -189,11 +182,11 @@ public final class AppUpdater {
   }
 
   /**
-   * Fetches the latest release from GitHub API and extracts APK download URL and
-   * version.
+   * Fetches the latest release info and extracts APK download URL + version.
    * 
-   * @param apiUrl GitHub API releases URL (e.g.,
-   *               https://api.github.com/repos/owner/repo/releases)
+   *    {"android-6.4.16.apk":"https://.../android-6.4.16.apk", ...}
+   *
+   * @param apiUrl API endpoint returning release metadata
    * @return ReleaseInfo containing APK URL and version, or null if not found
    */
   @Nullable
@@ -202,7 +195,7 @@ public final class AppUpdater {
       URL url = new URL(apiUrl);
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("GET");
-      connection.setRequestProperty("Accept", "application/vnd.github+json");
+      connection.setRequestProperty("Accept", "application/json");
       connection.setDoInput(true);
       connection.connect();
 
@@ -224,37 +217,30 @@ public final class AppUpdater {
 
       connection.disconnect();
 
-      // Parse JSON array of releases
-      JSONArray releases = new JSONArray(jsonBuilder.toString());
-      if (releases.length() == 0) {
-        Log.w(TAG, "No releases found in GitHub API response");
-        return null;
-      }
+      JSONObject files = new JSONObject(jsonBuilder.toString().trim());
 
-      // Get the first (latest) release
-      JSONObject latestRelease = releases.getJSONObject(0);
-      JSONArray assets = latestRelease.getJSONArray("assets");
+      for (java.util.Iterator<String> it = files.keys(); it.hasNext();) {
+        String fileName = it.next();
+        if (fileName == null || !fileName.endsWith(".apk")) {
+          continue;
+        }
 
-      // Find the .apk file in assets
-      for (int i = 0; i < assets.length(); i++) {
-        JSONObject asset = assets.getJSONObject(i);
-        String assetName = asset.getString("name");
+        String downloadUrl = files.optString(fileName, null);
+        if (TextUtils.isEmpty(downloadUrl)) {
+          continue;
+        }
 
-        if (assetName.endsWith(".apk")) {
-          String downloadUrl = asset.getString("browser_download_url");
-          String version = extractVersionFromUrl(downloadUrl);
-
-          if (version != null) {
-            return new ReleaseInfo(downloadUrl, version);
-          }
+        String version = extractVersionFromUrl(fileName);
+        if (version != null) {
+          return new ReleaseInfo(downloadUrl, version);
         }
       }
 
-      Log.w(TAG, "No .apk file found in latest release assets");
+      Log.w(TAG, "No .apk file found in API response");
       return null;
 
     } catch (Exception e) {
-      Log.e(TAG, "Failed to fetch GitHub release info", e);
+      Log.e(TAG, "Failed to fetch release info", e);
       return null;
     }
   }

@@ -1,6 +1,7 @@
 /* globals PictureInPicture */
 import { App } from '@capacitor/app'
 import { Browser } from '@capacitor/browser'
+import { Capacitor } from '@capacitor/core'
 import { Device } from '@capacitor/device'
 // import { LocalNotifications } from '@capacitor/local-notifications'
 import { Share } from '@capacitor/share'
@@ -19,6 +20,18 @@ import './serializers/error'
 import type { PluginListenerHandle } from '@capacitor/core'
 import type { Native } from 'native'
 import type TorrentClient from 'torrent-client'
+
+const MAX_RELOADS = 3
+
+const reloadCount = Number(sessionStorage.getItem('cap_reload_count') ?? '0')
+// I DONT KNOW, I GIVE UP WITH CAPACITOR
+// this fixes a rare issues on some device where the first page load just doesnt load the plugins for some reason!
+if (reloadCount < MAX_RELOADS && !Capacitor.isPluginAvailable('App')) {
+  sessionStorage.setItem('cap_reload_count', String(reloadCount + 1))
+  location.reload()
+} else {
+  sessionStorage.removeItem('cap_reload_count')
+}
 
 // @ts-expect-error yep.
 if (!window.native) {

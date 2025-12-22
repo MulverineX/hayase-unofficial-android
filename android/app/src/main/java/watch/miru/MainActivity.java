@@ -41,6 +41,36 @@ public class MainActivity extends BridgeActivity {
   private final Map<WebView, Dialog> popupDialogs = new HashMap<>();
   protected RequestQueue queue = null;
 
+  private void startNodeEngineWithCustomArgs() {
+    try {
+      CapacitorNodeJSPlugin capacitorNodeJS = (CapacitorNodeJSPlugin) getBridge().getPlugin("CapacitorNodeJS")
+          .getInstance();
+
+      Field f = CapacitorNodeJSPlugin.class.getDeclaredField("implementation");
+      f.setAccessible(true);
+      CapacitorNodeJS implementation = (CapacitorNodeJS) f.get(capacitorNodeJS);
+
+      String[] nodeArgs = new String[] {
+        "--disallow-code-generation-from-strings",
+        "--disable-proto=throw",
+        "--frozen-intrinsics"
+      };
+
+      Method m = CapacitorNodeJS.class.getDeclaredMethod(
+          "startEngine",
+          com.getcapacitor.PluginCall.class,
+          String.class,
+          String.class,
+          String[].class,
+          Map.class);
+      m.setAccessible(true);
+      m.invoke(implementation, null, "nodejs", null, nodeArgs, new HashMap<>());
+      Log.i("NodeJS", "Started NodeJS engine with custom args");
+    } catch (Exception e) {
+      Log.e("NodeJS", "Failed to start NodeJS engine with custom args", e);
+    }
+  }
+
   @Override
   public void onDestroy() {
     try {
@@ -69,6 +99,8 @@ public class MainActivity extends BridgeActivity {
 
     super.onCreate(savedInstanceState);
 
+    startNodeEngineWithCustomArgs();
+
     try {
       if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
         WebView.setWebContentsDebuggingEnabled(true);
@@ -83,7 +115,7 @@ public class MainActivity extends BridgeActivity {
 
     final WebView webView = getBridge().getWebView();
 
-    AppUpdater.downloadAndInstallApk(this, "https://api.github.com/repos/hayase-app/docs/releases");
+    AppUpdater.downloadAndInstallApk(this, "https://api.hayase.watch/latest");
 
     WebSettings settings = webView.getSettings();
     settings.setSupportMultipleWindows(true);

@@ -55,12 +55,14 @@ android {
     }
 
     applicationVariants.all { variant ->
-        variant.outputs.all { output ->
-            def buildType = variant.buildType.name
-            def versionName = variant.versionName
-            
-            // Rename APK to android-{version}.apk
-            outputFileName = "android-${versionName}.apk"
+        // Only rename APKs for release builds
+        if (variant.buildType.name == "release") {
+            variant.outputs.all { output ->
+                def versionName = variant.versionName
+
+                // Rename APK to android-{version}.apk
+                outputFileName = "android-${versionName}.apk"
+            }
         }
     }
 }
