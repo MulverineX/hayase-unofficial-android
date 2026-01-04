@@ -44,7 +44,7 @@ const config = [
       alias: {
         wrtc: false,
         'node-datachannel': false,
-        'http-tracker': resolve('./node_modules/bittorrent-tracker/lib/client/http-tracker.js'),
+        'http-tracker': join(dirname, 'node_modules/bittorrent-tracker/lib/client/http-tracker.js'),
         'webrtc-polyfill': false // no webrtc on mobile, need the resources
       }
     },

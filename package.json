@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@capacitor/android": "^7.4.4",
+    "bittorrent-tracker": "^11.2.1",
     "@capacitor/app": "^7.1.0",
     "@capacitor/assets": "github:thaunknown/capacitor-assets",
     "@capacitor/browser": "^7.0.2",
