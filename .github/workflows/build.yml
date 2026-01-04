@@ -33,7 +33,7 @@ jobs:
           node-version: 19.x
 
       - name: install dependencies
-        run: npm ci
+        run: npm i
 
       - name: Create Build Folder
         run: npm run build:app
