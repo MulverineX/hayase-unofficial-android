@@ -48,8 +48,8 @@ importers:
         specifier: ^0.0.2
         version: 0.0.2(@capacitor/core@7.4.4)
       capacitor-nodejs:
-        specifier: git+https://github.com/hayase-app/capacitor-nodejs.git
-        version: git+https://github.com/hayase-app/capacitor-nodejs.git#01551a56ef6e0081ee21279948c85c7c581ae704(@capacitor/core@7.4.4)
+        specifier: https://github.com/hampoelz/capacitor-nodejs/releases/download/v1.0.0-beta.9/capacitor-nodejs.tgz
+        version: https://github.com/hampoelz/capacitor-nodejs/releases/download/v1.0.0-beta.9/capacitor-nodejs.tgz(@capacitor/core@7.4.4)
       concurrently:
         specifier: ^9.2.1
         version: 9.2.1
@@ -1084,9 +1084,9 @@ packages:
     peerDependencies:
       '@capacitor/core': ^6.0.0
 
-  capacitor-nodejs@git+https://github.com/hayase-app/capacitor-nodejs.git#01551a56ef6e0081ee21279948c85c7c581ae704:
-    resolution: {commit: 01551a56ef6e0081ee21279948c85c7c581ae704, repo: https://github.com/hayase-app/capacitor-nodejs.git, type: git}
-    version: 2.1.0
+  capacitor-nodejs@https://github.com/hampoelz/capacitor-nodejs/releases/download/v1.0.0-beta.9/capacitor-nodejs.tgz:
+    resolution: {tarball: https://github.com/hampoelz/capacitor-nodejs/releases/download/v1.0.0-beta.9/capacitor-nodejs.tgz}
+    version: 1.0.0-beta.9
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
 
@@ -5693,7 +5693,7 @@ snapshots:
     dependencies:
       '@capacitor/core': 7.4.4
 
-  capacitor-nodejs@git+https://github.com/hayase-app/capacitor-nodejs.git#01551a56ef6e0081ee21279948c85c7c581ae704(@capacitor/core@7.4.4):
+  capacitor-nodejs@https://github.com/hampoelz/capacitor-nodejs/releases/download/v1.0.0-beta.9/capacitor-nodejs.tgz(@capacitor/core@7.4.4):
     dependencies:
       '@capacitor/core': 7.4.4
 
