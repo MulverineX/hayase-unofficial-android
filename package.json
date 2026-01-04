@@ -2,6 +2,11 @@
   "name": "capacitor",
   "private": true,
   "packageManager": "pnpm@9.15.5",
+  "pnpm": {
+    "neverBuiltDependencies": [
+      "node-datachannel"
+    ]
+  },
   "devDependencies": {
     "@capacitor/android": "^7.4.4",
     "@capacitor/app": "^7.1.0",
