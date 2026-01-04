@@ -1,13 +1,8 @@
 #!/bin/bash
 
-# instructions
-# Install Android NDK
-# Set $ANDROID_NDK_PATH (example: ~/Android/Sdk/ndk/26.1.10909125)
-# Download and extract android .zip for nodejs-mobile from https://github.com/nodejs-mobile/nodejs-mobile/releases/tag/v18.17.2
-# Update LIBNODE_PATH
-# npm install nodejs-mobile-gyp
-# install other npm packages like normal
-# run this script
+# Native module build script for Android
+# Uses libnode headers bundled with capacitor-nodejs package
+# Run via: npm run build:native
 
 cd public/nodejs
 

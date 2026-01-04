@@ -10,88 +10,53 @@ jobs:
   build:
     name: Build APK
     runs-on: ubuntu-latest
-    # TODO: add the default directory - COMMENT IF IT'S NOT IN SUBFOLDER
-    # defaults:
-    #   run:
-    #     working-directory: ./frontend
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
-        # TODO: add your branch to checkout
-        with:
-          ref: main
+        uses: actions/checkout@v4
 
-      - name: Setup java
-        uses: actions/setup-java@v3
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
           distribution: "zulu"
-          java-version: "17"
+          java-version: "21"
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 19.x
+          node-version: 22
 
-      - name: install dependencies
-        run: npm i --force
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
-      - name: Create Build Folder
-        run: npm run build:app
+      - name: Install dependencies
+        run: pnpm install
 
-      - name: Add android folder if not present
-        run: if [ ! -d "./android" ]; then npx cap add android; fi
+      - name: Build app
+        run: pnpm run build:app
 
-      - name: Capacitor update
-        run: npx cap update
+      - name: Capacitor sync
+        run: npx cap sync android
 
-      - name: Capacitor copy
-        run: npx cap copy
+      - name: Build APK
+        run: cd android && ./gradlew assembleDebug
 
-      # TODO: Check for folder structure in README for generating splash screen
-      - name: Generate icons and splash screen to android folder
-        run: if [ -d "./resources" ]; then npm install @capacitor/assets --save-dev && npx capacitor-assets generate --android; fi
-
-      - name: Build app bundle
-        run: cd android && ./gradlew bundle && ./gradlew assembleDebug
-
-      - name: Check folder content of android output
-        run: ls ./android/app/build/outputs/bundle/release
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Set version
         id: version
         run: echo "VERSION=v0.0.${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
 
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.VERSION }}
-          release_name: Release ${{ steps.version.outputs.VERSION }}
+          name: Release ${{ steps.version.outputs.VERSION }}
           draft: false
           prerelease: true
-
-    #   - name: Upload Release Asset .aab
-    #     id: upload-release-asset-aab
-    #     uses: actions/upload-release-asset@v1
-    #     env:
-    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #     with:
-    #       upload_url: ${{ steps.create_release.outputs.upload_url }}
-    #       asset_path: ./android/app/build/outputs/bundle/release/app-release-signed.aab
-    #       # Customize the asset name. If not specified, the file name is used.
-    #       asset_name: app-release-signed.aab
-    #       asset_content_type: application/zip
-
-      - name: Upload Release Asset .apk
-        id: upload-release-asset-apk
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./android/app/build/outputs/apk/debug/app-debug.apk
-          # Customize the asset name. If not specified, the file name is used.
-          asset_name: app-debug.apk
-          asset_content_type: application/vnd.android.package-archive
+          files: android/app/build/outputs/apk/debug/app-debug.apk

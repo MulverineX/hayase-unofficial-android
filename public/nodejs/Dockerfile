@@ -1,13 +1,11 @@
-FROM alpine:3.19 AS worker
-
 FROM saschpe/android-ndk:35-jdk23.0.2_7-ndk28.0.13004108-cmake3.31.5
 
 USER root
 
-COPY ../../nodejs-mobile /opt/libnode
-ENV LIBNODE_PATH=/opt/libnode
+# Use libnode headers bundled with capacitor-nodejs (mounted at runtime via -v)
+ENV LIBNODE_PATH=/app/node_modules/capacitor-nodejs/android/libnode
 
-# Install nodejs 24.5.0 (same version as nodejs-mobile)
+# Install Node.js for running npm
 ARG NODE_MAJOR=24
 
 RUN apt-get update
