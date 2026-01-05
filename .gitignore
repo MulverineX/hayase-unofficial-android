@@ -4,10 +4,6 @@ build/
 node_modules/
 
 !android/app/src/main/res/
-android/app/src/main/res/*
-!android/app/src/main/res/drawable/
-android/app/src/main/res/drawable/*
-!android/app/src/main/res/drawable/ic_pip_icon.xml
 
 ios/
 
