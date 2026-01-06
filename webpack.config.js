@@ -37,6 +37,15 @@ const config = [
           // Wrap in try-catch - yencode is only needed for NZB/Usenet support
           return callback(null, `(function() { try { return require("${request}"); } catch(e) { console.warn("yencode unavailable:", e.message); return { decode: null, decodeTo: () => 0 }; } })()`)
         }
+        if (request?.includes('nzb-file')) {
+          // Stub nzb-file - NZB/Usenet support not available on Android (TextDecoder 'ascii' not supported)
+          return callback(null, `(function() {
+            var stub = function() { return Promise.reject(new Error("NZB support not available on Android")); };
+            stub.NNTPFile = function() { throw new Error("NZB support not available on Android"); };
+            stub.default = stub;
+            return stub;
+          })()`)
+        }
         callback()
       },
       {
