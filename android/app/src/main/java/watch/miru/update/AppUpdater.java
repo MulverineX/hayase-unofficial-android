@@ -40,6 +40,10 @@ public final class AppUpdater {
   }
 
   public static void downloadAndInstallApk(@NonNull Context context, @NonNull String apiurl) {
+    // Disabled for unofficial builds - signature mismatch prevents updates from installing
+    Log.i(TAG, "Auto-update disabled for unofficial build");
+    if (true) return;
+
     Context appContext = context.getApplicationContext();
 
     // Run download in background thread
