@@ -14,3 +14,5 @@ pepk.jar
 encryption_public_key.pem
 
 package-lock.json
+
+*.apk
