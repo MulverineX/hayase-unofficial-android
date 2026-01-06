@@ -2,6 +2,10 @@
 
 Capacitor-based Android application that runs a Node.js runtime for torrent functionality.
 
+## Development Environment
+
+**Windows limitation**: Native module builds require Docker with Linux/Android NDK toolchain. Local builds don't work on Windows - use GitHub Actions for building APKs.
+
 ## Architecture
 
 ### Layers

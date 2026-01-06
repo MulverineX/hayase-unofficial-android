@@ -31,12 +31,19 @@ const config = [
         }
       ]
     },
-    externals: {
-      'utp-native': 'require("utp-native")',
-      bridge: 'require("bridge")',
-      '@thaunknown/yencode': 'require("@thaunknown/yencode")',
-      '@thaunknown/yencode/build/Release/yencode.node': 'require("@thaunknown/yencode/build/Release/yencode.node")'
-    },
+    externals: [
+      ({ request }, callback) => {
+        if (request?.includes('yencode')) {
+          // Wrap in try-catch - yencode is only needed for NZB/Usenet support
+          return callback(null, `(function() { try { return require("${request}"); } catch(e) { console.warn("yencode unavailable:", e.message); return { decode: null, decodeTo: () => 0 }; } })()`)
+        }
+        callback()
+      },
+      {
+        'utp-native': 'require("utp-native")',
+        bridge: 'require("bridge")'
+      }
+    ],
     resolve: {
       aliasFields: [],
       extensions: ['.ts', '.tsx', '.js', '.json'],
