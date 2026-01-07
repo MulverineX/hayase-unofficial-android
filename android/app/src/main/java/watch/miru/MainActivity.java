@@ -186,6 +186,42 @@ public class MainActivity extends BridgeActivity {
 
         String urlString = request.getUrl().toString();
 
+        // Intercept JASSUB asset requests to serve local 1.8.8-compatible versions
+        // This swaps JASSUB 2.x (WebGPU-dependent) worker with jassub-compat (Canvas2D fallback)
+        if (urlString.contains("jassub-worker.js") ||
+            urlString.contains("jassub-worker.wasm") ||
+            urlString.contains("jassub-worker-modern.wasm") ||
+            urlString.contains("default.woff2")) {
+
+          String assetPath = "jassub/";
+          String mimeType;
+
+          if (urlString.contains("jassub-worker.js")) {
+            assetPath += "jassub-worker.js";
+            mimeType = "application/javascript";
+          } else if (urlString.contains("jassub-worker-modern.wasm")) {
+            assetPath += "jassub-worker-modern.wasm";
+            mimeType = "application/wasm";
+          } else if (urlString.contains("jassub-worker.wasm")) {
+            assetPath += "jassub-worker.wasm";
+            mimeType = "application/wasm";
+          } else {
+            assetPath += "default.woff2";
+            mimeType = "font/woff2";
+          }
+
+          try {
+            InputStream stream = getAssets().open(assetPath);
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Access-Control-Allow-Origin", "*");
+            headers.put("Cache-Control", "public, max-age=31536000");
+            Log.d(TAG, "Intercepted JASSUB asset: " + urlString + " -> " + assetPath);
+            return new WebResourceResponse(mimeType, "UTF-8", 200, "OK", headers, stream);
+          } catch (IOException e) {
+            Log.e(TAG, "Failed to load JASSUB asset: " + assetPath, e);
+          }
+        }
+
         boolean isMAL = urlString.startsWith("https://myanimelist.net/v1/oauth2")
             || urlString.startsWith("https://api.myanimelist.net/v2/");
 
