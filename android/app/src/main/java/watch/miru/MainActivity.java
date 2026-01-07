@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -38,23 +39,29 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends BridgeActivity {
+  private static final String TAG = "HAYASE-NATIVE";
   private final Map<WebView, Dialog> popupDialogs = new HashMap<>();
   protected RequestQueue queue = null;
 
   private void startNodeEngineWithCustomArgs() {
+    Log.d(TAG, "startNodeEngineWithCustomArgs() called");
     try {
+      Log.d(TAG, "Getting CapacitorNodeJS plugin instance...");
       CapacitorNodeJSPlugin capacitorNodeJS = (CapacitorNodeJSPlugin) getBridge().getPlugin("CapacitorNodeJS")
           .getInstance();
+      Log.d(TAG, "CapacitorNodeJS plugin instance obtained");
 
       Field f = CapacitorNodeJSPlugin.class.getDeclaredField("implementation");
       f.setAccessible(true);
       CapacitorNodeJS implementation = (CapacitorNodeJS) f.get(capacitorNodeJS);
+      Log.d(TAG, "Got CapacitorNodeJS implementation via reflection");
 
       String[] nodeArgs = new String[] {
         "--disallow-code-generation-from-strings",
         "--disable-proto=throw",
         "--frozen-intrinsics"
       };
+      Log.d(TAG, "Node args: " + String.join(", ", nodeArgs));
 
       Method m = CapacitorNodeJS.class.getDeclaredMethod(
           "startEngine",
@@ -64,10 +71,11 @@ public class MainActivity extends BridgeActivity {
           String[].class,
           Map.class);
       m.setAccessible(true);
+      Log.d(TAG, "Invoking startEngine method...");
       m.invoke(implementation, null, "nodejs", null, nodeArgs, new HashMap<>());
-      Log.i("NodeJS", "Started NodeJS engine with custom args");
+      Log.i(TAG, "NodeJS engine started successfully with custom args");
     } catch (Exception e) {
-      Log.e("NodeJS", "Failed to start NodeJS engine with custom args", e);
+      Log.e(TAG, "Failed to start NodeJS engine with custom args", e);
     }
   }
 
@@ -92,28 +100,43 @@ public class MainActivity extends BridgeActivity {
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
+    Log.d(TAG, "onCreate() started");
+    Log.d(TAG, "Device: " + android.os.Build.MANUFACTURER + " " + android.os.Build.MODEL);
+    Log.d(TAG, "Android version: " + android.os.Build.VERSION.RELEASE + " (SDK " + android.os.Build.VERSION.SDK_INT + ")");
+    Log.d(TAG, "Supported ABIs: " + String.join(", ", android.os.Build.SUPPORTED_ABIS));
+
     this.queue = Volley.newRequestQueue(this);
+    Log.d(TAG, "Registering plugins...");
     registerPlugin(MediaNotificationPlugin.class);
+    Log.d(TAG, "Registered MediaNotificationPlugin");
     registerPlugin(EngagePlugin.class);
+    Log.d(TAG, "Registered EngagePlugin");
     registerPlugin(FilesystemPlugin.class);
+    Log.d(TAG, "Registered FilesystemPlugin");
 
+    Log.d(TAG, "Calling super.onCreate()...");
     super.onCreate(savedInstanceState);
+    Log.d(TAG, "super.onCreate() completed");
 
+    Log.d(TAG, "Starting NodeJS engine...");
     startNodeEngineWithCustomArgs();
 
     try {
       if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
         WebView.setWebContentsDebuggingEnabled(true);
+        Log.d(TAG, "WebView debugging enabled");
       }
       // Attempt to set command line flags (may not work on all devices/versions, if
       // at all)
       String commandLine = "--enable-blink-features=AudioVideoTracks --enable-experimental-web-platform-features";
       System.setProperty("chromium.command_line", commandLine);
     } catch (Exception e) {
+      Log.e(TAG, "Failed to set WebView flags", e);
       e.printStackTrace();
     }
 
     final WebView webView = getBridge().getWebView();
+    Log.d(TAG, "Got WebView from bridge");
 
     AppUpdater.downloadAndInstallApk(this, "https://api.hayase.watch/latest");
 
@@ -124,6 +147,7 @@ public class MainActivity extends BridgeActivity {
     settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
     settings.setUseWideViewPort(true);
     settings.setLoadWithOverviewMode(true);
+    Log.d(TAG, "WebView settings configured");
 
     hideSystemUI();
 
@@ -135,10 +159,12 @@ public class MainActivity extends BridgeActivity {
     if (getIntent() != null && getIntent().getCategories() != null) {
       isLeanbackIntent = getIntent().getCategories().contains("android.intent.category.LEANBACK_LAUNCHER");
     }
+    Log.d(TAG, "Leanback feature: " + isLeanback + ", Leanback intent: " + isLeanbackIntent);
     if (isLeanback || isLeanbackIntent) {
       String ua = settings.getUserAgentString();
       if (!ua.contains("AndroidTV")) {
         settings.setUserAgentString(ua + " AndroidTV");
+        Log.d(TAG, "Added AndroidTV to user agent");
       }
     }
 
@@ -292,6 +318,7 @@ public class MainActivity extends BridgeActivity {
       }
     });
 
+    Log.d(TAG, "Setting up WebChromeClient...");
     // make js window.open() work just like in a browser
     webView.setWebChromeClient(new WebChromeClient() {
       // these 2 overrides are needed to re-implement fullscreen mode which breaks by
@@ -299,6 +326,24 @@ public class MainActivity extends BridgeActivity {
       private View mCustomView;
       private WebChromeClient.CustomViewCallback mCustomViewCallback;
       private int mOriginalSystemUiVisibility;
+
+      // Forward WebView console messages to logcat for debugging
+      @Override
+      public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+        String msg = consoleMessage.message() + " -- From line " + consoleMessage.lineNumber() + " of " + consoleMessage.sourceId();
+        switch (consoleMessage.messageLevel()) {
+          case ERROR:
+            Log.e("HAYASE-WEBVIEW", msg);
+            break;
+          case WARNING:
+            Log.w("HAYASE-WEBVIEW", msg);
+            break;
+          default:
+            Log.d("HAYASE-WEBVIEW", msg);
+            break;
+        }
+        return true;
+      }
 
       @Override
       public void onShowCustomView(View view, CustomViewCallback callback) {
@@ -397,6 +442,8 @@ public class MainActivity extends BridgeActivity {
         }
       }
     });
+
+    Log.d(TAG, "onCreate() completed - native layer initialization finished");
   }
 
   // Hides the status and navigation bars for immersive fullscreen

@@ -21,15 +21,31 @@ import type { PluginListenerHandle } from '@capacitor/core'
 import type { Native } from 'native'
 import type TorrentClient from 'torrent-client'
 
+// Debug logging helper - logs to logcat via WebView console
+const DEBUG_TAG = '[HAYASE-WEB]'
+function debugLog (...args: unknown[]) {
+  console.log(DEBUG_TAG, ...args)
+}
+
+debugLog('Web layer initializing...')
+debugLog('Platform:', Capacitor.getPlatform())
+debugLog('Is native:', Capacitor.isNativePlatform())
+
 const MAX_RELOADS = 3
 
 const reloadCount = Number(sessionStorage.getItem('cap_reload_count') ?? '0')
+debugLog('Reload count:', reloadCount, '/', MAX_RELOADS)
+debugLog('App plugin available:', Capacitor.isPluginAvailable('App'))
+debugLog('CapacitorNodeJS plugin available:', Capacitor.isPluginAvailable('CapacitorNodeJS'))
+
 // I DONT KNOW, I GIVE UP WITH CAPACITOR
 // this fixes a rare issues on some device where the first page load just doesnt load the plugins for some reason!
 if (reloadCount < MAX_RELOADS && !Capacitor.isPluginAvailable('App')) {
+  debugLog('App plugin not available, triggering reload...')
   sessionStorage.setItem('cap_reload_count', String(reloadCount + 1))
   location.reload()
 } else {
+  debugLog('Plugins loaded successfully, continuing initialization')
   sessionStorage.removeItem('cap_reload_count')
 }
 
@@ -214,32 +230,38 @@ if (!window.native) {
     })
   }
 
+  debugLog('Setting up NodeJS bridge wrapper...')
+
   function createWrapper (channel: typeof NodeJS): Endpoint {
     const listeners = new WeakMap<(...args: any[]) => void, PluginListenerHandle>()
 
     return {
       async on (event: string, listener: (data: unknown) => void) {
+        debugLog('Bridge: registering listener for:', event)
         // @ts-expect-error idfk
         const unwrapped: ChannelListenerCallback = (event) => listener(...event.args)
         listeners.set(listener, await channel.addListener(event, unwrapped))
       },
       off (event: string, listener: (...args: any[]) => void) {
+        debugLog('Bridge: removing listener')
         const unwrapped = listeners.get(listener)!
         channel.removeListener(unwrapped)
 
         listeners.delete(listener)
       },
       postMessage (message: unknown) {
+        debugLog('Bridge: posting message to NodeJS')
         channel.send({ eventName: 'message', args: [message] })
       }
     }
   }
 
   function wrap<T> (): Remote<T> {
+    debugLog('Creating wrapped TorrentClient proxy')
     return _wrap(createWrapper(NodeJS))
   }
 
-  console.warn('loaded native')
+  debugLog('Bridge wrapper configured')
 
   const DEFAULTS = {
     player: '',
@@ -281,15 +303,32 @@ if (!window.native) {
   const store = new Store()
 
   async function sendNodeSettings (id: 'init' | 'settings') {
+    debugLog('sendNodeSettings called with id:', id)
     let path = await storageTypeToPath(store.data.torrentPath)
     if (path) path += '/hayase'
+    debugLog('sendNodeSettings path:', path)
+    debugLog('sendNodeSettings settings:', JSON.stringify(store.data.torrentSettings))
     NodeJS.send({ eventName: 'port-init', args: [{ id, data: { ...store.data.torrentSettings, path } }] })
+    debugLog('sendNodeSettings message sent')
   }
 
+  debugLog('Waiting for NodeJS.whenReady()...')
+  const nodeReadyStart = Date.now()
+
   const torrent = NodeJS.whenReady().then(async () => {
+    const elapsed = Date.now() - nodeReadyStart
+    debugLog('NodeJS.whenReady() resolved after', elapsed, 'ms')
+    debugLog('Sending init settings to Node.js layer...')
     await sendNodeSettings('init')
-    return wrap<TorrentClient>()
+    debugLog('Init settings sent, creating TorrentClient wrapper...')
+    const client = wrap<TorrentClient>()
+    debugLog('TorrentClient wrapper created')
+    return client
+  }).catch(err => {
+    debugLog('ERROR in NodeJS.whenReady():', err)
+    throw err
   })
+
   const version = App.getInfo().then(info => info.version)
 
   async function storageTypeToPath (type?: 'cache' | 'internal' | 'sdcard') {
@@ -425,4 +464,5 @@ if (!window.native) {
 
   // @ts-expect-error yep.
   window.native = native
+  debugLog('window.native assigned, web layer initialization complete')
 }
