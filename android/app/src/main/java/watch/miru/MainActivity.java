@@ -186,27 +186,22 @@ public class MainActivity extends BridgeActivity {
 
         String urlString = request.getUrl().toString();
 
-        // Log ALL requests for debugging (filter to just hayase.app and worker-related)
-        if (urlString.contains("hayase.app") || urlString.contains("worker") ||
-            urlString.contains(".wasm") || urlString.contains("jassub")) {
+        // Log requests for debugging JASSUB interception
+        if (urlString.contains("jassub") || urlString.contains("__jassub") || urlString.contains(".wasm")) {
           Log.d(TAG, "WebView request: " + urlString);
         }
 
         // Intercept JASSUB asset requests to serve local 1.8.8-compatible versions
-        // This swaps JASSUB 2.x (WebGPU-dependent) worker with jassub-compat (Canvas2D fallback)
-        // Vite bundles the worker as "worker-<hash>.js" in /assets/, so we match:
-        // - Any .js file in /assets/ containing "worker" (catches worker-abc123.js)
-        // - Explicit jassub-worker filenames
-        boolean isJassubWorkerJs = urlString.contains("jassub-worker.js") ||
-            (urlString.contains("/assets/") && urlString.contains("worker") && urlString.endsWith(".js"));
-        boolean isJassubWasmModern = urlString.contains("jassub-worker-modern.wasm") ||
-            (urlString.contains("/assets/") && urlString.contains("modern") && urlString.endsWith(".wasm"));
-        boolean isJassubWasm = (urlString.contains("jassub-worker.wasm") ||
-            (urlString.contains("/assets/") && urlString.endsWith(".wasm"))) && !isJassubWasmModern;
-        boolean isDefaultFont = urlString.contains("default.woff2");
+        // The Worker constructor override redirects JASSUB worker to our marker URL
+        boolean isJassubWorkerJs = urlString.contains("__jassub_worker_intercept__.js");
+        // WASM files requested by the worker (relative to worker location or absolute)
+        boolean isJassubWasmModern = urlString.contains("jassub-worker-modern.wasm");
+        boolean isJassubWasm = urlString.contains("jassub-worker.wasm") && !isJassubWasmModern;
+        // Default fallback font
+        boolean isDefaultFont = urlString.contains("default.woff2") && urlString.contains("jassub");
 
         if (isJassubWorkerJs || isJassubWasm || isJassubWasmModern || isDefaultFont) {
-          Log.d(TAG, "Matched JASSUB pattern: workerJs=" + isJassubWorkerJs + " wasm=" + isJassubWasm +
+          Log.i(TAG, "Intercepting JASSUB asset: workerJs=" + isJassubWorkerJs + " wasm=" + isJassubWasm +
               " wasmModern=" + isJassubWasmModern + " font=" + isDefaultFont + " url=" + urlString);
 
           String assetPath = "jassub/";
@@ -523,7 +518,7 @@ public class MainActivity extends BridgeActivity {
       webView.evaluateJavascript(jsCode, null);
 
       // Skip port forwarding check - Android doesn't support UPnP and the 60s scan wastes time
-      String patch = "(function() {" +
+      String portPatch = "(function() {" +
           "  function patchNative(obj) {" +
           "    obj.checkIncomingConnections = function() { return Promise.resolve(false); };" +
           "  }" +
@@ -539,7 +534,24 @@ public class MainActivity extends BridgeActivity {
           "    });" +
           "  }" +
           "})();";
-      webView.evaluateJavascript(patch, null);
+      webView.evaluateJavascript(portPatch, null);
+
+      // Intercept JASSUB worker creation to swap WebGPU-dependent 2.x worker with Canvas2D-based 1.8.8 worker
+      // JASSUB creates its worker with: new Worker(url, { name: 'jassub-worker', type: 'module' })
+      // We override the Worker constructor to redirect only JASSUB's worker to our interceptable marker URL
+      String jassubPatch = "(function() {" +
+          "  var OriginalWorker = window.Worker;" +
+          "  window.Worker = function(url, options) {" +
+          "    if (options && options.name === 'jassub-worker') {" +
+          "      console.log('[HAYASE] Intercepting JASSUB worker creation, redirecting to local jassub-compat');" +
+          "      url = 'https://hayase.app/__jassub_worker_intercept__.js';" +
+          "    }" +
+          "    return new OriginalWorker(url, options);" +
+          "  };" +
+          "  window.Worker.prototype = OriginalWorker.prototype;" +
+          "  console.log('[HAYASE] Worker constructor patched for JASSUB interception');" +
+          "})();";
+      webView.evaluateJavascript(jassubPatch, null);
 
     } catch (IOException e) {
       e.printStackTrace();
