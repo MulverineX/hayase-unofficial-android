@@ -8,6 +8,14 @@ Capacitor-based Android application that runs a Node.js runtime for torrent func
 - Native module builds require Docker with Linux/Android NDK toolchain. Local builds don't work on Windows - use GitHub Actions for building APKs.
 - When debugging, download the APK from the github prerelease before deploying it with adb.
 
+**Android TV debugging**:
+- Test device IP: `192.168.79.56:5555`
+- Connect via: `adb connect 192.168.79.56:5555`
+
+## TODO
+
+- [ ] Make CI auto-increment the version in package.json on each build
+
 ## Architecture
 
 ### Layers

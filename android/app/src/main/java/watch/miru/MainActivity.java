@@ -186,23 +186,39 @@ public class MainActivity extends BridgeActivity {
 
         String urlString = request.getUrl().toString();
 
+        // Log ALL requests for debugging (filter to just hayase.app and worker-related)
+        if (urlString.contains("hayase.app") || urlString.contains("worker") ||
+            urlString.contains(".wasm") || urlString.contains("jassub")) {
+          Log.d(TAG, "WebView request: " + urlString);
+        }
+
         // Intercept JASSUB asset requests to serve local 1.8.8-compatible versions
         // This swaps JASSUB 2.x (WebGPU-dependent) worker with jassub-compat (Canvas2D fallback)
-        if (urlString.contains("jassub-worker.js") ||
-            urlString.contains("jassub-worker.wasm") ||
-            urlString.contains("jassub-worker-modern.wasm") ||
-            urlString.contains("default.woff2")) {
+        // Vite bundles the worker as "worker-<hash>.js" in /assets/, so we match:
+        // - Any .js file in /assets/ containing "worker" (catches worker-abc123.js)
+        // - Explicit jassub-worker filenames
+        boolean isJassubWorkerJs = urlString.contains("jassub-worker.js") ||
+            (urlString.contains("/assets/") && urlString.contains("worker") && urlString.endsWith(".js"));
+        boolean isJassubWasmModern = urlString.contains("jassub-worker-modern.wasm") ||
+            (urlString.contains("/assets/") && urlString.contains("modern") && urlString.endsWith(".wasm"));
+        boolean isJassubWasm = (urlString.contains("jassub-worker.wasm") ||
+            (urlString.contains("/assets/") && urlString.endsWith(".wasm"))) && !isJassubWasmModern;
+        boolean isDefaultFont = urlString.contains("default.woff2");
+
+        if (isJassubWorkerJs || isJassubWasm || isJassubWasmModern || isDefaultFont) {
+          Log.d(TAG, "Matched JASSUB pattern: workerJs=" + isJassubWorkerJs + " wasm=" + isJassubWasm +
+              " wasmModern=" + isJassubWasmModern + " font=" + isDefaultFont + " url=" + urlString);
 
           String assetPath = "jassub/";
           String mimeType;
 
-          if (urlString.contains("jassub-worker.js")) {
+          if (isJassubWorkerJs) {
             assetPath += "jassub-worker.js";
             mimeType = "application/javascript";
-          } else if (urlString.contains("jassub-worker-modern.wasm")) {
+          } else if (isJassubWasmModern) {
             assetPath += "jassub-worker-modern.wasm";
             mimeType = "application/wasm";
-          } else if (urlString.contains("jassub-worker.wasm")) {
+          } else if (isJassubWasm) {
             assetPath += "jassub-worker.wasm";
             mimeType = "application/wasm";
           } else {
@@ -505,6 +521,25 @@ public class MainActivity extends BridgeActivity {
 
       // The 'null' second argument is a callback that we don't need here.
       webView.evaluateJavascript(jsCode, null);
+
+      // Skip port forwarding check - Android doesn't support UPnP and the 60s scan wastes time
+      String patch = "(function() {" +
+          "  function patchNative(obj) {" +
+          "    obj.checkIncomingConnections = function() { return Promise.resolve(false); };" +
+          "  }" +
+          "  if (window.native) { patchNative(window.native); }" +
+          "  else {" +
+          "    var desc = Object.getOwnPropertyDescriptor(window, 'native');" +
+          "    Object.defineProperty(window, 'native', {" +
+          "      configurable: true," +
+          "      set: function(val) {" +
+          "        patchNative(val);" +
+          "        Object.defineProperty(window, 'native', desc || { value: val, configurable: true, writable: true });" +
+          "      }" +
+          "    });" +
+          "  }" +
+          "})();";
+      webView.evaluateJavascript(patch, null);
 
     } catch (IOException e) {
       e.printStackTrace();
