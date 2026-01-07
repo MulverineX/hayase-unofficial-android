@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(adb devices:*)"
+      "Bash(adb devices:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)"
     ]
   }
 }

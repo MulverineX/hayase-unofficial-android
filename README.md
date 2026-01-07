@@ -1,8 +1,24 @@
 # Unofficial build of Hayase app for Android
 
+## NOTICE: do NOT go to upstream/hayase/thaunknown for support
+
+These builds are provided without any support, feel free to open an issue but it will most likely be ignored.
+
+Currently many legacy devices (including the Nvidia Shield) do not work due to upstream's dependency on WebGPU. \
+Eventually, I will attempt to create a patch in this fork that replaces the dependant implementation.
+
+In the future I may add a patch that disables the useless network checks during app setup.
+
+Yes, I had the option of sleuthing around the Hayase API endpoint, but I figured this is more future proof and useful.
+
 ## Changes from upstream
 
-This fork replaces closed-source dependencies with open-source alternatives:
+- Disables Updater
+- Adds missing android resources
+- Skips incompatible node-datachannel module, not a problem because the import for it is disabled upstream anyway
+- Removes support for NZB/Usenet because something wasn't working
+- Fixes torrent tracker JS bundle path resolution within the GH:A CI environment
+- Replaces the two closed-source dependencies with an open-source alternative:
 
 ### capacitor-nodejs
 
@@ -25,51 +41,3 @@ The replacement package bundles:
 | **Headers** | From submodule | Bundled in `capacitor-nodejs` |
 
 The nodejs-mobile git submodule has been removed entirely. The `capacitor-nodejs` package now provides all necessary headers for building native Node.js modules, eliminating the need for an external submodule.
-
-## Build
-
-### Prerequisites
-
-- Node.js 22+
-- pnpm 9+
-- Docker (for native module compilation)
-- Android SDK with NDK
-
-### Commands
-
-```bash
-# Install dependencies
-pnpm install
-
-# Build everything (web, native modules, assets)
-pnpm run build:app
-
-# Sync with Android project
-npx cap sync android
-
-# Build APK
-cd android && ./gradlew assembleDebug
-```
-
-### Individual build steps
-
-```bash
-# Build web bundles only
-pnpm run build:web
-
-# Build native modules only (requires Docker)
-pnpm run build:native
-
-# Generate app icons and splash screens
-pnpm run build:assets
-```
-
-## CI/CD
-
-The GitHub Actions workflow (`.github/workflows/build.yml`) automatically:
-1. Installs dependencies with pnpm
-2. Builds web and native modules
-3. Compiles the Android APK
-4. Creates a GitHub release with the APK attached
-
-Builds are triggered on pushes to `main` or manually via workflow dispatch.
