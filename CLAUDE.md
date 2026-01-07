@@ -4,7 +4,9 @@ Capacitor-based Android application that runs a Node.js runtime for torrent func
 
 ## Development Environment
 
-**Windows limitation**: Native module builds require Docker with Linux/Android NDK toolchain. Local builds don't work on Windows - use GitHub Actions for building APKs.
+**Windows limitation**:
+- Native module builds require Docker with Linux/Android NDK toolchain. Local builds don't work on Windows - use GitHub Actions for building APKs.
+- When debugging, download the APK from the github prerelease before deploying it with adb.
 
 ## Architecture
 

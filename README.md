@@ -4,8 +4,8 @@
 
 These builds are provided without any support, feel free to open an issue but it will most likely be ignored.
 
-Currently many legacy devices (including the Nvidia Shield) do not work due to upstream's dependency on WebGPU. \
-Eventually, I will attempt to create a patch in this fork that replaces the dependant implementation.
+Currently subtitles on legacy devices (including the Nvidia Shield) do not work due to upstream's dependency on WebGPU. \
+I am working on a fork of JASSUB to solve this issue [here](https://github.com/MulverineX/jassub-compat).
 
 In the future I may add a patch that disables the useless network checks during app setup.
 
@@ -18,6 +18,7 @@ Yes, I had the option of sleuthing around the Hayase API endpoint, but I figured
 - Skips incompatible node-datachannel module, not a problem because the import for it is disabled upstream anyway
 - Removes support for NZB/Usenet because something wasn't working
 - Fixes torrent tracker JS bundle path resolution within the GH:A CI environment
+- Adds explicit `ndk.abiFilters` to get Capacitor-NodeJS working on Android TV
 - Replaces the two closed-source dependencies with an open-source alternative:
 
 ### capacitor-nodejs
