@@ -12,6 +12,9 @@ Capacitor-based Android application that runs a Node.js runtime for torrent func
 - Test device IP: `192.168.79.56:5555`
 - Connect via: `adb connect 192.168.79.56:5555`
 
+**GitHub Actions**:
+- Do NOT poll workflow runs to check if they're done - wait for user to confirm build completion
+
 ## TODO
 
 - [ ] Make CI auto-increment the version in package.json on each build
