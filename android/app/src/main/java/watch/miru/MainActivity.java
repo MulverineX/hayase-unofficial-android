@@ -170,6 +170,16 @@ public class MainActivity extends BridgeActivity {
 
     webView.setWebViewClient(new WebViewClient() {
       @Override
+      public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
+        super.onPageStarted(view, url, favicon);
+        // Inject Worker override EARLY - before page scripts run
+        // This must happen before JASSUB creates its worker
+        if (url != null && (url.startsWith("https://hayase.app") || url.startsWith("http://localhost"))) {
+          injectEarlyPatches(view);
+        }
+      }
+
+      @Override
       public void onPageFinished(WebView view, String url) {
         // Only inject JavaScript for allowed URLs.
         super.onPageFinished(view, url);
@@ -536,25 +546,30 @@ public class MainActivity extends BridgeActivity {
           "})();";
       webView.evaluateJavascript(portPatch, null);
 
-      // Intercept JASSUB worker creation to swap WebGPU-dependent 2.x worker with Canvas2D-based 1.8.8 worker
-      // JASSUB creates its worker with: new Worker(url, { name: 'jassub-worker', type: 'module' })
-      // We override the Worker constructor to redirect only JASSUB's worker to our interceptable marker URL
-      String jassubPatch = "(function() {" +
-          "  var OriginalWorker = window.Worker;" +
-          "  window.Worker = function(url, options) {" +
-          "    if (options && options.name === 'jassub-worker') {" +
-          "      console.log('[HAYASE] Intercepting JASSUB worker creation, redirecting to local jassub-compat');" +
-          "      url = 'https://hayase.app/__jassub_worker_intercept__.js';" +
-          "    }" +
-          "    return new OriginalWorker(url, options);" +
-          "  };" +
-          "  window.Worker.prototype = OriginalWorker.prototype;" +
-          "  console.log('[HAYASE] Worker constructor patched for JASSUB interception');" +
-          "})();";
-      webView.evaluateJavascript(jassubPatch, null);
-
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  // Inject patches that must run BEFORE page scripts execute
+  private void injectEarlyPatches(WebView webView) {
+    // Intercept JASSUB worker creation to swap WebGPU-dependent 2.x worker with Canvas2D-based 1.8.8 worker
+    // JASSUB creates its worker with: new Worker(url, { name: 'jassub-worker', type: 'module' })
+    // We override the Worker constructor to redirect only JASSUB's worker to our interceptable marker URL
+    String jassubPatch = "(function() {" +
+        "  if (window.__hayaseWorkerPatched) return;" +
+        "  window.__hayaseWorkerPatched = true;" +
+        "  var OriginalWorker = window.Worker;" +
+        "  window.Worker = function(url, options) {" +
+        "    if (options && options.name === 'jassub-worker') {" +
+        "      console.log('[HAYASE] Intercepting JASSUB worker creation, redirecting to local jassub-compat');" +
+        "      url = 'https://hayase.app/__jassub_worker_intercept__.js';" +
+        "    }" +
+        "    return new OriginalWorker(url, options);" +
+        "  };" +
+        "  window.Worker.prototype = OriginalWorker.prototype;" +
+        "  console.log('[HAYASE] Worker constructor patched for JASSUB interception');" +
+        "})();";
+    webView.evaluateJavascript(jassubPatch, null);
   }
 }
