@@ -197,8 +197,49 @@ public class MainActivity extends BridgeActivity {
         String urlString = request.getUrl().toString();
 
         // Log requests for debugging JASSUB interception
-        if (urlString.contains("jassub") || urlString.contains("__jassub") || urlString.contains(".wasm")) {
+        if (urlString.contains("jassub") || urlString.contains("__hayase") || urlString.contains(".wasm")) {
           Log.d(TAG, "WebView request: " + urlString);
+        }
+
+        // Intercept Service Worker script for JASSUB WASM interception
+        // The SW intercepts WASM requests from Web Workers (which bypass shouldInterceptRequest)
+        // and re-fetches them through a marker URL that CAN be intercepted
+        if (urlString.contains("__hayase_jassub_sw__.js")) {
+          Log.i(TAG, "Serving JASSUB Service Worker script");
+          String swScript =
+            "self.addEventListener('install', function(e) { self.skipWaiting(); });\n" +
+            "self.addEventListener('activate', function(e) { e.waitUntil(clients.claim()); });\n" +
+            "self.addEventListener('fetch', function(e) {\n" +
+            "  var url = e.request.url;\n" +
+            "  if (url.includes('jassub-worker') && url.includes('.wasm')) {\n" +
+            "    console.log('[HAYASE-SW] Intercepting WASM request:', url);\n" +
+            "    var filename = url.includes('modern') ? 'jassub-worker-modern.wasm' : 'jassub-worker.wasm';\n" +
+            "    e.respondWith(fetch('/__hayase_wasm__/' + filename).then(function(r) {\n" +
+            "      console.log('[HAYASE-SW] WASM fetched successfully');\n" +
+            "      return r;\n" +
+            "    }));\n" +
+            "  }\n" +
+            "});\n";
+          Map<String, String> headers = new HashMap<>();
+          headers.put("Content-Type", "application/javascript");
+          headers.put("Service-Worker-Allowed", "/");
+          return new WebResourceResponse("application/javascript", "UTF-8", 200, "OK", headers,
+              new java.io.ByteArrayInputStream(swScript.getBytes(StandardCharsets.UTF_8)));
+        }
+
+        // Intercept WASM requests from Service Worker (marker URL pattern)
+        if (urlString.contains("__hayase_wasm__/")) {
+          String filename = urlString.substring(urlString.lastIndexOf('/') + 1);
+          Log.i(TAG, "Serving JASSUB WASM via SW marker: " + filename);
+          try {
+            InputStream stream = getAssets().open("jassub/" + filename);
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Access-Control-Allow-Origin", "*");
+            headers.put("Cache-Control", "public, max-age=31536000");
+            return new WebResourceResponse("application/wasm", "UTF-8", 200, "OK", headers, stream);
+          } catch (IOException e) {
+            Log.e(TAG, "Failed to load JASSUB WASM: " + filename, e);
+          }
         }
 
         // Intercept JASSUB asset requests to serve local 1.8.8-compatible versions
@@ -553,6 +594,23 @@ public class MainActivity extends BridgeActivity {
 
   // Inject patches that must run BEFORE page scripts execute
   private void injectEarlyPatches(WebView webView) {
+    // Register Service Worker to intercept WASM requests from Web Workers
+    // Web Worker fetch/XHR doesn't go through shouldInterceptRequest, but Service Worker fetch DOES
+    String swRegistration = "(function() {" +
+        "  if (window.__hayaseSwRegistered) return;" +
+        "  window.__hayaseSwRegistered = true;" +
+        "  if ('serviceWorker' in navigator) {" +
+        "    navigator.serviceWorker.register('/__hayase_jassub_sw__.js', { scope: '/' })" +
+        "      .then(function(reg) {" +
+        "        console.log('[HAYASE] Service Worker registered for JASSUB WASM interception');" +
+        "      })" +
+        "      .catch(function(err) {" +
+        "        console.error('[HAYASE] Service Worker registration failed:', err);" +
+        "      });" +
+        "  }" +
+        "})();";
+    webView.evaluateJavascript(swRegistration, null);
+
     // Intercept JASSUB worker creation to swap WebGPU-dependent 2.x worker with Canvas2D-based 1.8.8 worker
     // JASSUB creates its worker with: new Worker(url, { name: 'jassub-worker', type: 'module' })
     // We override the Worker constructor to redirect only JASSUB's worker to our interceptable marker URL
