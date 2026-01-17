@@ -32,20 +32,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Download JASSUB-compat assets
-        run: |
-          mkdir -p android/app/src/main/assets/jassub
-          # Get latest release tag (including prereleases)
-          LATEST_TAG=$(gh release list --repo MulverineX/jassub-compat --limit 1 --json tagName --jq '.[0].tagName')
-          echo "Downloading jassub-compat $LATEST_TAG"
-          # Download assets from that release
-          gh release download "$LATEST_TAG" --repo MulverineX/jassub-compat -p 'jassub-worker.js' -D android/app/src/main/assets/jassub
-          gh release download "$LATEST_TAG" --repo MulverineX/jassub-compat -p 'jassub-worker.wasm' -D android/app/src/main/assets/jassub
-          gh release download "$LATEST_TAG" --repo MulverineX/jassub-compat -p 'jassub-worker-modern.wasm' -D android/app/src/main/assets/jassub
-          gh release download "$LATEST_TAG" --repo MulverineX/jassub-compat -p 'default.woff2' -D android/app/src/main/assets/jassub
-        env:
-          GH_TOKEN: ${{ github.token }}
-
       - name: Build app
         run: pnpm run build:app
 
