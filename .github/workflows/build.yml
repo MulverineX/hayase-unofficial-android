@@ -60,17 +60,40 @@ jobs:
           name: app-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Set version
+      - name: Set version for main branch
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        id: version
+        id: version-main
         run: echo "VERSION=v0.0.${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
 
-      - name: Create Release
+      - name: Set version for PR builds
+        if: github.event_name == 'pull_request'
+        id: version-pr
+        run: echo "VERSION=pr-${{ github.event.pull_request.number }}-${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+
+      - name: Create Release (Main Branch)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.version.outputs.VERSION }}
-          name: Release ${{ steps.version.outputs.VERSION }}
+          tag_name: ${{ steps.version-main.outputs.VERSION }}
+          name: Release ${{ steps.version-main.outputs.VERSION }}
           draft: false
           prerelease: true
           files: android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Create Release (PR Build)
+        if: github.event_name == 'pull_request'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version-pr.outputs.VERSION }}
+          name: PR #${{ github.event.pull_request.number }} Build ${{ github.run_number }}
+          draft: false
+          prerelease: true
+          files: android/app/build/outputs/apk/debug/app-debug.apk
+          body: |
+            Automated build for PR #${{ github.event.pull_request.number }}
+
+            **PR Title:** ${{ github.event.pull_request.title }}
+            **Branch:** `${{ github.head_ref }}`
+            **Commit:** ${{ github.event.pull_request.head.sha }}
+
+            **Direct APK download:** [app-debug.apk](https://github.com/${{ github.repository }}/releases/download/${{ steps.version-pr.outputs.VERSION }}/app-debug.apk)
