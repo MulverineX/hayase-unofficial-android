@@ -172,11 +172,12 @@ public class MainActivity extends BridgeActivity {
       @Override
       public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
         super.onPageStarted(view, url, favicon);
+        // TEMPORARILY DISABLED: Testing upstream JASSUB changes
         // Inject Worker override EARLY - before page scripts run
         // This must happen before JASSUB creates its worker
-        if (url != null && (url.startsWith("https://hayase.app") || url.startsWith("http://localhost"))) {
-          injectEarlyPatches(view);
-        }
+        // if (url != null && (url.startsWith("https://hayase.app") || url.startsWith("http://localhost"))) {
+        //   injectEarlyPatches(view);
+        // }
       }
 
       @Override
@@ -196,93 +197,94 @@ public class MainActivity extends BridgeActivity {
 
         String urlString = request.getUrl().toString();
 
-        // Log requests for debugging JASSUB interception
-        if (urlString.contains("jassub") || urlString.contains("__hayase") || urlString.contains(".wasm")) {
-          Log.d(TAG, "WebView request: " + urlString);
-        }
-
-        // Intercept Service Worker script for JASSUB WASM interception
-        // The SW intercepts WASM requests from Web Workers (which bypass shouldInterceptRequest)
-        // and re-fetches them through a marker URL that CAN be intercepted
-        if (urlString.contains("__hayase_jassub_sw__.js")) {
-          Log.i(TAG, "Serving JASSUB Service Worker script");
-          String swScript =
-            "self.addEventListener('install', function(e) { self.skipWaiting(); });\n" +
-            "self.addEventListener('activate', function(e) { e.waitUntil(clients.claim()); });\n" +
-            "self.addEventListener('fetch', function(e) {\n" +
-            "  var url = e.request.url;\n" +
-            "  if (url.includes('jassub-worker') && url.includes('.wasm')) {\n" +
-            "    console.log('[HAYASE-SW] Intercepting WASM request:', url);\n" +
-            "    var filename = url.includes('modern') ? 'jassub-worker-modern.wasm' : 'jassub-worker.wasm';\n" +
-            "    e.respondWith(fetch('/__hayase_wasm__/' + filename).then(function(r) {\n" +
-            "      console.log('[HAYASE-SW] WASM fetched successfully');\n" +
-            "      return r;\n" +
-            "    }));\n" +
-            "  }\n" +
-            "});\n";
-          Map<String, String> headers = new HashMap<>();
-          headers.put("Content-Type", "application/javascript");
-          headers.put("Service-Worker-Allowed", "/");
-          return new WebResourceResponse("application/javascript", "UTF-8", 200, "OK", headers,
-              new java.io.ByteArrayInputStream(swScript.getBytes(StandardCharsets.UTF_8)));
-        }
-
-        // Intercept WASM requests from Service Worker (marker URL pattern)
-        if (urlString.contains("__hayase_wasm__/")) {
-          String filename = urlString.substring(urlString.lastIndexOf('/') + 1);
-          Log.i(TAG, "Serving JASSUB WASM via SW marker: " + filename);
-          try {
-            InputStream stream = getAssets().open("jassub/" + filename);
-            Map<String, String> headers = new HashMap<>();
-            headers.put("Access-Control-Allow-Origin", "*");
-            headers.put("Cache-Control", "public, max-age=31536000");
-            return new WebResourceResponse("application/wasm", "UTF-8", 200, "OK", headers, stream);
-          } catch (IOException e) {
-            Log.e(TAG, "Failed to load JASSUB WASM: " + filename, e);
-          }
-        }
-
-        // Intercept JASSUB asset requests to serve local 1.8.8-compatible versions
-        // The Worker constructor override redirects JASSUB worker to our marker URL
-        boolean isJassubWorkerJs = urlString.contains("__jassub_worker_intercept__.js");
-        // WASM files requested by the worker (relative to worker location or absolute)
-        boolean isJassubWasmModern = urlString.contains("jassub-worker-modern.wasm");
-        boolean isJassubWasm = urlString.contains("jassub-worker.wasm") && !isJassubWasmModern;
-        // Default fallback font
-        boolean isDefaultFont = urlString.contains("default.woff2") && urlString.contains("jassub");
-
-        if (isJassubWorkerJs || isJassubWasm || isJassubWasmModern || isDefaultFont) {
-          Log.i(TAG, "Intercepting JASSUB asset: workerJs=" + isJassubWorkerJs + " wasm=" + isJassubWasm +
-              " wasmModern=" + isJassubWasmModern + " font=" + isDefaultFont + " url=" + urlString);
-
-          String assetPath = "jassub/";
-          String mimeType;
-
-          if (isJassubWorkerJs) {
-            assetPath += "jassub-worker.js";
-            mimeType = "application/javascript";
-          } else if (isJassubWasmModern) {
-            assetPath += "jassub-worker-modern.wasm";
-            mimeType = "application/wasm";
-          } else if (isJassubWasm) {
-            assetPath += "jassub-worker.wasm";
-            mimeType = "application/wasm";
-          } else {
-            assetPath += "default.woff2";
-            mimeType = "font/woff2";
-          }
-
-          try {
-            InputStream stream = getAssets().open(assetPath);
-            Map<String, String> headers = new HashMap<>();
-            headers.put("Access-Control-Allow-Origin", "*");
-            headers.put("Cache-Control", "public, max-age=31536000");
-            Log.d(TAG, "Intercepted JASSUB asset: " + urlString + " -> " + assetPath);
-            return new WebResourceResponse(mimeType, "UTF-8", 200, "OK", headers, stream);
-          } catch (IOException e) {
-            Log.e(TAG, "Failed to load JASSUB asset: " + assetPath, e);
-          }
-        }
+        // TEMPORARILY DISABLED: Testing upstream JASSUB changes
+        // // Log requests for debugging JASSUB interception
+        // if (urlString.contains("jassub") || urlString.contains("__hayase") || urlString.contains(".wasm")) {
+        //   Log.d(TAG, "WebView request: " + urlString);
+        // }
+        //
+        // // Intercept Service Worker script for JASSUB WASM interception
+        // // The SW intercepts WASM requests from Web Workers (which bypass shouldInterceptRequest)
+        // // and re-fetches them through a marker URL that CAN be intercepted
+        // if (urlString.contains("__hayase_jassub_sw__.js")) {
+        //   Log.i(TAG, "Serving JASSUB Service Worker script");
+        //   String swScript =
+        //     "self.addEventListener('install', function(e) { self.skipWaiting(); });\n" +
+        //     "self.addEventListener('activate', function(e) { e.waitUntil(clients.claim()); });\n" +
+        //     "self.addEventListener('fetch', function(e) {\n" +
+        //     "  var url = e.request.url;\n" +
+        //     "  if (url.includes('jassub-worker') && url.includes('.wasm')) {\n" +
+        //     "    console.log('[HAYASE-SW] Intercepting WASM request:', url);\n" +
+        //     "    var filename = url.includes('modern') ? 'jassub-worker-modern.wasm' : 'jassub-worker.wasm';\n" +
+        //     "    e.respondWith(fetch('/__hayase_wasm__/' + filename).then(function(r) {\n" +
+        //     "      console.log('[HAYASE-SW] WASM fetched successfully');\n" +
+        //     "      return r;\n" +
+        //     "    }));\n" +
+        //     "  }\n" +
+        //     "});\n";
+        //   Map<String, String> headers = new HashMap<>();
+        //   headers.put("Content-Type", "application/javascript");
+        //   headers.put("Service-Worker-Allowed", "/");
+        //   return new WebResourceResponse("application/javascript", "UTF-8", 200, "OK", headers,
+        //       new java.io.ByteArrayInputStream(swScript.getBytes(StandardCharsets.UTF_8)));
+        // }
+        //
+        // // Intercept WASM requests from Service Worker (marker URL pattern)
+        // if (urlString.contains("__hayase_wasm__/")) {
+        //   String filename = urlString.substring(urlString.lastIndexOf('/') + 1);
+        //   Log.i(TAG, "Serving JASSUB WASM via SW marker: " + filename);
+        //   try {
+        //     InputStream stream = getAssets().open("jassub/" + filename);
+        //     Map<String, String> headers = new HashMap<>();
+        //     headers.put("Access-Control-Allow-Origin", "*");
+        //     headers.put("Cache-Control", "public, max-age=31536000");
+        //     return new WebResourceResponse("application/wasm", "UTF-8", 200, "OK", headers, stream);
+        //   } catch (IOException e) {
+        //     Log.e(TAG, "Failed to load JASSUB WASM: " + filename, e);
+        //   }
+        // }
+        //
+        // // Intercept JASSUB asset requests to serve local 1.8.8-compatible versions
+        // // The Worker constructor override redirects JASSUB worker to our marker URL
+        // boolean isJassubWorkerJs = urlString.contains("__jassub_worker_intercept__.js");
+        // // WASM files requested by the worker (relative to worker location or absolute)
+        // boolean isJassubWasmModern = urlString.contains("jassub-worker-modern.wasm");
+        // boolean isJassubWasm = urlString.contains("jassub-worker.wasm") && !isJassubWasmModern;
+        // // Default fallback font
+        // boolean isDefaultFont = urlString.contains("default.woff2") && urlString.contains("jassub");
+        //
+        // if (isJassubWorkerJs || isJassubWasm || isJassubWasmModern || isDefaultFont) {
+        //   Log.i(TAG, "Intercepting JASSUB asset: workerJs=" + isJassubWorkerJs + " wasm=" + isJassubWasm +
+        //       " wasmModern=" + isJassubWasmModern + " font=" + isDefaultFont + " url=" + urlString);
+        //
+        //   String assetPath = "jassub/";
+        //   String mimeType;
+        //
+        //   if (isJassubWorkerJs) {
+        //     assetPath += "jassub-worker.js";
+        //     mimeType = "application/javascript";
+        //   } else if (isJassubWasmModern) {
+        //     assetPath += "jassub-worker-modern.wasm";
+        //     mimeType = "application/wasm";
+        //   } else if (isJassubWasm) {
+        //     assetPath += "jassub-worker.wasm";
+        //     mimeType = "application/wasm";
+        //   } else {
+        //     assetPath += "default.woff2";
+        //     mimeType = "font/woff2";
+        //   }
+        //
+        //   try {
+        //     InputStream stream = getAssets().open(assetPath);
+        //     Map<String, String> headers = new HashMap<>();
+        //     headers.put("Access-Control-Allow-Origin", "*");
+        //     headers.put("Cache-Control", "public, max-age=31536000");
+        //     Log.d(TAG, "Intercepted JASSUB asset: " + urlString + " -> " + assetPath);
+        //     return new WebResourceResponse(mimeType, "UTF-8", 200, "OK", headers, stream);
+        //   } catch (IOException e) {
+        //     Log.e(TAG, "Failed to load JASSUB asset: " + assetPath, e);
+        //   }
+        // }
 
         boolean isMAL = urlString.startsWith("https://myanimelist.net/v1/oauth2")
             || urlString.startsWith("https://api.myanimelist.net/v2/");
